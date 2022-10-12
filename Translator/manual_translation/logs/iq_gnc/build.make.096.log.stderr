@@ -1,0 +1,11 @@
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:124:35:[m[K [01;31m[Kerror: [m[K‘[01m[Kdrone_node[m[K’ was not declared in this scope
+         init_publisher_subscriber([01;31m[Kdrone_node[m[K);
+                                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:124:35:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kdrone_instance[m[K’
+         init_publisher_subscriber([01;36m[Kdrone_node[m[K);
+                                   [01;36m[K^~~~~~~~~~[m[K
+                                   [32m[Kdrone_instance[m[K
+make[2]: *** [CMakeFiles/drone.dir/src/drone.cpp.o] Error 1
+make[1]: *** [CMakeFiles/drone.dir/all] Error 2
+make: *** [all] Error 2

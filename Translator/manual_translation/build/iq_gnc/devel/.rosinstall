@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/adi/ardu_ws/build/iq_gnc/devel/setup.sh

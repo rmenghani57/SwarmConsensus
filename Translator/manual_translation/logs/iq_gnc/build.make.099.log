@@ -1,0 +1,8 @@
+[35m[1mScanning dependencies of target drone[0m
+[ 20%] Built target input
+[ 40%] Built target server
+[ 60%] Built target square
+[ 70%] [32mBuilding CXX object CMakeFiles/drone.dir/src/drone.cpp.o[0m
+[ 90%] Built target gnc_example
+[100%] [32m[1mLinking CXX executable /home/adi/ardu_ws/devel/.private/iq_gnc/lib/iq_gnc/drone[0m
+[100%] Built target drone

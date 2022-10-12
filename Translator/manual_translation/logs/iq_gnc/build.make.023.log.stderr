@@ -1,0 +1,7 @@
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/input.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/input.cpp:22:28:[m[K [01;31m[Kerror: [m[Krequest for member ‘[01m[Kgenerate_request[m[K’ in ‘[01m[Kinput_instance[m[K’, which is of non-class type ‘[01m[KInput()[m[K’
+             input_instance.[01;31m[Kgenerate_request[m[K();
+                            [01;31m[K^~~~~~~~~~~~~~~~[m[K
+make[2]: *** [CMakeFiles/input.dir/src/input.cpp.o] Error 1
+make[1]: *** [CMakeFiles/input.dir/all] Error 2
+make: *** [all] Error 2

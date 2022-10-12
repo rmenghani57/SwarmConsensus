@@ -1,0 +1,1 @@
+/home/adi/ardu_ws/devel/.private/darknet_ros/lib/pkgconfig/darknet_ros.pc

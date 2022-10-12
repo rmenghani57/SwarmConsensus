@@ -1,0 +1,23 @@
+[35m[1mScanning dependencies of target drone[0m
+[ 40%] Built target gnc_example
+[ 40%] Built target input
+[ 60%] Built target server
+[ 80%] Built target square
+[ 90%] [32mBuilding CXX object CMakeFiles/drone.dir/src/drone.cpp.o[0m
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:[m[K In function ‘[01m[Kvoid service(bool, int)[m[K’:
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:8:5:[m[K [01;31m[Kerror: [m[K‘[01m[Knh[m[K’ was not declared in this scope
+     [01;31m[Knh[m[K.getParam("/selected_drone", selected_drone);
+     [01;31m[K^~[m[K
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:79:9:[m[K [01;31m[Kerror: [m[K‘[01m[Krate[m[K’ was not declared in this scope
+         [01;31m[Krate[m[K.sleep();
+         [01;31m[K^~~~[m[K
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:79:9:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kret[m[K’
+         [01;36m[Krate[m[K.sleep();
+         [01;36m[K^~~~[m[K
+         [32m[Kret[m[K
+CMakeFiles/drone.dir/build.make:62: recipe for target 'CMakeFiles/drone.dir/src/drone.cpp.o' failed
+make[2]: *** [CMakeFiles/drone.dir/src/drone.cpp.o] Error 1
+CMakeFiles/Makefile2:2647: recipe for target 'CMakeFiles/drone.dir/all' failed
+make[1]: *** [CMakeFiles/drone.dir/all] Error 2
+Makefile:140: recipe for target 'all' failed
+make: *** [all] Error 2

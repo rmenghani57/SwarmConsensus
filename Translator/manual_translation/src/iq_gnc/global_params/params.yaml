@@ -1,0 +1,42 @@
+N: 3
+altitude: [200.0, 200.0, 200.0]
+fuel: [200.0, 200.0, 200.0]
+temp: [0.0, 0.0, 0.0]
+technical_sensor: [true, true, true]
+# Added availability here rather than the drone
+availability: [true, true, true]
+bat: [100.0, 100.0, 100.0]
+drone_number: 0
+drone_number_counter: 0
+drone_synchronisation_counter: 0
+drone_synchronisation_counter_2: 0
+serving_drone_counter: 0
+
+time_server: 0
+time: [0.0, 0.0, 0.0]
+global_key: 0
+
+x_server: 0
+y_server: 0
+
+# broadcast chan request
+request: 0
+# chan serve
+serve: 0
+# chan request_from_building
+request_from_building: 0
+# chan start
+start: 0
+
+x_coord: 0
+y_coord: 0
+
+x: [0.0, 0.0, 5.0]
+y: [0.0, -5.0, -5.0]
+dist: [0.0, 0.0, 0.0]
+update_dist: [0.0, 0.0, 0.0]
+shortest_dist: [0.0, 0.0, 0.0]
+chosen: [-1, -1, -1]
+serving_drone: -1
+
+selected_drone: [-1, -1, -1]

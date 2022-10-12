@@ -1,0 +1,7 @@
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:15:5:[m[K [01;31m[Kerror: [m[K‘[01m[Kvector[m[K’ does not name a type; did you mean ‘[01m[Kperror[m[K’?
+     [01;31m[Kvector[m[K<bool> availability = vector<bool>(N, true);
+     [01;31m[K^~~~~~[m[K
+     [32m[Kperror[m[K
+make[2]: *** [CMakeFiles/drone.dir/src/drone.cpp.o] Error 1
+make[1]: *** [CMakeFiles/drone.dir/all] Error 2
+make: *** [all] Error 2

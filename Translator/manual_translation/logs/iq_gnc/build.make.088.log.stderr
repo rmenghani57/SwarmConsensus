@@ -1,0 +1,10 @@
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:96:36:[m[K [01;31m[Kerror: [m[Kinvalid types ‘[01m[Kint[int][m[K’ for array subscript
+                 if(selected_drone[0[01;31m[K][m[K != my_number)// probably replace with drone_instance->i)
+                                    [01;31m[K^[m[K
+[01m[K/home/adi/ardu_ws/src/iq_gnc/src/drone.cpp:107:34:[m[K [01;31m[Kerror: [m[K‘[01m[Ki[m[K’ was not declared in this scope
+                     availability[[01;31m[Ki[m[K] = false;
+                                  [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/drone.dir/src/drone.cpp.o] Error 1
+make[1]: *** [CMakeFiles/drone.dir/all] Error 2
+make: *** [all] Error 2

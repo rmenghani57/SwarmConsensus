@@ -11,12 +11,12 @@ public:
 	}
 	void reset_arrays()
 	{
-		vector<int> drone_candidates;
-		nh.getParam("/drone_candidates", drone_candidates);
-		int N;
-		nh.getParam("/N", N);
 		vector<int> drone_time;
 		nh.getParam("/drone_time", drone_time);
+		int N;
+		nh.getParam("/N", N);
+		vector<int> drone_candidates;
+		nh.getParam("/drone_candidates", drone_candidates);
 		  for (int i = 0; i < (N - 1); i++)
 		  {
 		    drone_candidates[i] = 0;
@@ -26,10 +26,10 @@ public:
 	}
 	bool check_leader_pos()
 	{
-		vector<int> goal;
-		nh.getParam("/goal", goal);
 		vector<int> leader_position;
 		nh.getParam("/leader_position", leader_position);
+		vector<int> goal;
+		nh.getParam("/goal", goal);
 		  if ((leader_position[0] == goal[0]) && (leader_position[1] == goal[1]))
 		    return true;
 		  else
@@ -43,12 +43,12 @@ public:
 	}
 	int find_drone_in_swarm(int capability)
 	{
+		vector<int> drone_capability;
+		nh.getParam("/drone_capability", drone_capability);
 		int N;
 		nh.getParam("/N", N);
 		vector<int> drone_status;
 		nh.getParam("/drone_status", drone_status);
-		vector<int> drone_capability;
-		nh.getParam("/drone_capability", drone_capability);
 		  for (int i = 0; i < (N - 1); i++)
 		  {
 		    if ((drone_status[id] != 0) && (drone_capability[id] == capability))
@@ -65,10 +65,10 @@ public:
 		nh.getParam("/goal_location", goal_location);
 		int N;
 		nh.getParam("/N", N);
-		vector<int> drone_location_x;
-		nh.getParam("/drone_location_x", drone_location_x);
 		vector<int> drone_location_y;
 		nh.getParam("/drone_location_y", drone_location_y);
+		vector<int> drone_location_x;
+		nh.getParam("/drone_location_x", drone_location_x);
 		  bool reached = true;
 		  for (int i = 0; i < (N - 1); i++)
 		  {
@@ -94,10 +94,10 @@ public:
 	}
 	bool within_reach(int x,int y)
 	{
-		int comm_reach;
-		nh.getParam("/comm_reach", comm_reach);
 		vector<int> leader_position;
 		nh.getParam("/leader_position", leader_position);
+		int comm_reach;
+		nh.getParam("/comm_reach", comm_reach);
 		  if (linear_distance(leader_position, x, y) <= comm_reach)
 		  {
 		    return true;
@@ -121,22 +121,22 @@ public:
 	}
 	int possible_member()
 	{
-		vector<int> drone_candidates;
-		nh.getParam("/drone_candidates", drone_candidates);
-		int N;
-		nh.getParam("/N", N);
-		vector<int> drone_location_x;
-		nh.getParam("/drone_location_x", drone_location_x);
-		vector<int> drone_status;
-		nh.getParam("/drone_status", drone_status);
-		vector<int> drone_battery;
-		nh.getParam("/drone_battery", drone_battery);
 		vector<int> drone_capability;
 		nh.getParam("/drone_capability", drone_capability);
-		int candidate_counter;
-		nh.getParam("/candidate_counter", candidate_counter);
+		int N;
+		nh.getParam("/N", N);
+		vector<int> drone_status;
+		nh.getParam("/drone_status", drone_status);
 		vector<int> drone_location_y;
 		nh.getParam("/drone_location_y", drone_location_y);
+		vector<int> drone_battery;
+		nh.getParam("/drone_battery", drone_battery);
+		vector<int> drone_location_x;
+		nh.getParam("/drone_location_x", drone_location_x);
+		int candidate_counter;
+		nh.getParam("/candidate_counter", candidate_counter);
+		vector<int> drone_candidates;
+		nh.getParam("/drone_candidates", drone_candidates);
 		  for (int i = 0; i < (N - 1); i++)
 		  {
 		    if ((((drone_status[i] == 0) && (drone_battery[i] > 49)) && within_reach(drone_location_x[i], drone_location_y[i])) && is_capabilities_needed(drone_capability[i]))
@@ -150,10 +150,10 @@ public:
 	}
 	bool voting_results()
 	{
-		vector<int> check_votes;
-		nh.getParam("/check_votes", check_votes);
 		int Needed;
 		nh.getParam("/Needed", Needed);
+		vector<int> check_votes;
+		nh.getParam("/check_votes", check_votes);
 		  for (int i = 0; i < (Needed - 2); i++)
 		  {
 		    if (check_votes[i] != check_votes[i + 1])
@@ -164,22 +164,22 @@ public:
 	}
 	void elect_leader()
 	{
-		vector<int> mission_capabilities;
-		nh.getParam("/mission_capabilities", mission_capabilities);
-		vector<int> check_votes;
-		nh.getParam("/check_votes", check_votes);
-		int Needed;
-		nh.getParam("/Needed", Needed);
-		int id_voter;
-		nh.getParam("/id_voter", id_voter);
-		vector<int> drone_status;
-		nh.getParam("/drone_status", drone_status);
 		vector<int> votes;
 		nh.getParam("/votes", votes);
-		int updating_mission;
-		nh.getParam("/updating_mission", updating_mission);
+		vector<int> drone_status;
+		nh.getParam("/drone_status", drone_status);
 		int voting_in_prog;
 		nh.getParam("/voting_in_prog", voting_in_prog);
+		vector<int> mission_capabilities;
+		nh.getParam("/mission_capabilities", mission_capabilities);
+		int Needed;
+		nh.getParam("/Needed", Needed);
+		int updating_mission;
+		nh.getParam("/updating_mission", updating_mission);
+		vector<int> check_votes;
+		nh.getParam("/check_votes", check_votes);
+		int id_voter;
+		nh.getParam("/id_voter", id_voter);
 		  for (int i = 0; i < (Needed - 1); i++)
 		  {
 		    int cap = mission_capabilities[i];
@@ -196,28 +196,28 @@ public:
 	}
 	void elect_members()
 	{
-		int Needed;
-		nh.getParam("/Needed", Needed);
-		int id_voter;
-		nh.getParam("/id_voter", id_voter);
-		vector<int> drone_capability;
-		nh.getParam("/drone_capability", drone_capability);
 		int voting_in_prog;
 		nh.getParam("/voting_in_prog", voting_in_prog);
-		int vote_counter;
-		nh.getParam("/vote_counter", vote_counter);
-		vector<int> mission_capabilities;
-		nh.getParam("/mission_capabilities", mission_capabilities);
-		vector<int> drone_status;
-		nh.getParam("/drone_status", drone_status);
-		int updating_mission;
-		nh.getParam("/updating_mission", updating_mission);
-		vector<int> check_member_votes;
-		nh.getParam("/check_member_votes", check_member_votes);
+		int Needed;
+		nh.getParam("/Needed", Needed);
 		int candidate_counter;
 		nh.getParam("/candidate_counter", candidate_counter);
+		int id_voter;
+		nh.getParam("/id_voter", id_voter);
 		vector<int> member_votes;
 		nh.getParam("/member_votes", member_votes);
+		vector<int> drone_status;
+		nh.getParam("/drone_status", drone_status);
+		int vote_counter;
+		nh.getParam("/vote_counter", vote_counter);
+		vector<int> check_member_votes;
+		nh.getParam("/check_member_votes", check_member_votes);
+		vector<int> drone_capability;
+		nh.getParam("/drone_capability", drone_capability);
+		vector<int> mission_capabilities;
+		nh.getParam("/mission_capabilities", mission_capabilities);
+		int updating_mission;
+		nh.getParam("/updating_mission", updating_mission);
 		  if (vote_counter == Needed)
 		  {
 		    for (int i = 0; i < (Needed - 1); i++)
