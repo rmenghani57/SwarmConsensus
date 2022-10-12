@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>    // Place global declarations here.
+    // Assume the communication reach is 10: the maximum
+    // reach of control tower and reach of leader drone 
+    
+    const int comm_reach = 10;
+        
+    int time_to_swarm[comm_reach] = {10, 21, 29, 38, 47, 57, 66, 76, 85, 95}; 
+    
+    int min_time = 0;
+  
+   // Total # of drones
+
+   const int N = 8;
+
+   // Drones in mission
+   const int Needed = 3;
+
+    //leader position, Initial leader is the tower
+    int leader_position[2] = {0,0};
+
+    // define global goal
+    int goal_location[2];
+
+    // fire location / swarm goal
+    int goal[2] = {60,60};
+
+    // variable that maps to function swarm_reached_goal
+    bool reached_goal = 0;
+    
+    // Mission update control
+    bool updating_mission = 1;
+
+    //Each drone ID is represented by the array index.
+    // drone characterization: 0 = not in swarm/network, -1 = loyal wingman, 1 = leader   // consider template for each
+    // this should allow for easy verification --&gt; not more than one leader, at least one leader, etc
+    // also useful to determine availability check, if it is already in swarm it cannot join, if it is not a loyal wingman it cant be elected leader, etc   
+    // initialization leader? any loyal wingman? or none. 
+    int drone_status[N] = {-1,0,-1,-1,0,0,0,0}; 
+
+    // List of drone batteries - currently 3 switches in leader
+    int drone_battery[N] = {55, 100, 175, 190, 185, 180, 180, 100}; 
+
+   // List of drone candidates for swarm
+   // if 1, then that drone number (index) is a candidate to join swarm
+    int drone_candidates[N] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+    // variable indicating if voting is in progress
+    bool voting_in_prog = 0;
+    
+    // List of drone locations
+    int drone_location_x[N] = {10,60,14,10,15,10,20,20}; 
+    int drone_location_y[N] = {12,20,10,17,10,20,10,10}; 
+    
+    // TODO: Potentially put drone data into structs
+
+    // variable to identify capabilities of each drone
+    // use case: wild land firefighting / communication towers burned down
+    // 0 = surveillance / good camera
+    // 1 = communications / long range external entity
+    // 2 = medical supply payload
+    // 3 = water dispenser
+    // 4 = chemical dispenser / fire retardant
+    // store the required drone capabilities in array
+    int drone_capability[N] = {1,1,3,2,2,3,5,1}; 
+    
+    // capabilties needed for this mission
+    int mission_capabilities[Needed] = {1,2,3};
+
+    
+
+    // Consensus
+
+    // drones populate this array with their vote for leader
+    // the number represents the drone if for whom each one votes
+    // if all elements match, then we have consensus
+
+    // initialization of votes for each drone
+    int votes[N] = {100,100,100,100,100,100,100,100};
+
+    // votes for members
+    int member_votes[N] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+    // counts how many votes have already been casted during election process
+    int vote_counter = 0;
+
+    int candidate_counter = 0;
+
+    // stores the votes by the active swarm members
+    int check_votes[Needed];
+
+    // stores the votes by the active swarm members
+    int check_member_votes[Needed];
+
+     
+    // voter id
+    int id_voter;
+
+     //the time it would take for a drone to reach swarm
+     int drone_time[N];    
+     int dist = 0;
+   
+    //election synchronization variable
+   broadcast chan election;
+    
+    // member electrion synch
+    broadcast chan member_election;
+
+    // Synchronisation event when the drone starts
+    broadcast chan update_status;
+
+    // Synchronization event for mission end / mission accomplished
+    broadcast chan mission_end;
+
+    // Synchronization events for movement
+    broadcast chan update_location;
+    broadcast chan location_updated;
+    
+  
+
+</declaration>
+	<template>
+		<name>Drone</name>
+		<parameter>int id, int &amp;cap, int &amp;battery</parameter>
+		<declaration>
+// location coordinates
+int x;
+int y;
+
+// function that checks if a given drone is leader
+bool is_leader(int id){
+    return drone_status[id] == 1;
+}
+
+ // Check if drone is in swarm
+    bool in_swarm(int id){
+        return drone_status[id] != 0;
+    }
+
+
+// Find the current drone in the swarm with capability return its id
+    int find_drone_in_swarm(int capability){
+        for (id : int[0,N-1])
+        {
+            if(drone_status[id] != 0 &amp;&amp; drone_capability[id] == capability) {
+                return id;
+            }
+        }
+        return -1;
+    }
+
+
+ // Leader only stops issuing move commands if everybody reached location.
+    // Mission is only complete when swarm reached goal
+    bool swarm_reached_goal(){
+        bool reached = true;
+        for (id : int[0,N-1])
+        {
+            if(in_swarm(id))
+            {
+                reached = reached &amp;&amp; drone_location_x[id] == goal_location[0] &amp;&amp; drone_location_y[id] == goal_location[1];
+            }
+        }
+
+        return reached;
+    } 
+
+
+// updates the variable that holds a copy of the position of the leader drone
+void update_leader_position(int id){
+    leader_position[0] = drone_location_x[id];
+    leader_position[1] = drone_location_y[id];
+}
+
+// checks if a given drone has reached the goal location
+bool reached_goal(int id){
+    return drone_location_x[id] == goal_location[0] &amp;&amp; drone_location_y[id] == goal_location[1];
+}
+
+// linear_distance() function returns the calculated linear distance i.e the linear distance of the drone from the requesting node
+
+    int linear_distance(int goal[2], int a, int b) {
+        int x_coord = goal[0];
+        int y_coord = goal[1];
+
+        int xsquare = (x_coord-a)*(x_coord-a);
+        int ysquare = (y_coord-b)*(y_coord-b);
+        int sum1 = xsquare + ysquare;
+        sum1 = fint(sqrt(sum1));
+        return sum1; // fint fucntion converts boolean or floating point value to integer
+    }
+
+
+void calculate_drone_times(int cap){
+     for (i : int[0,N-1])
+    {
+       if(drone_candidates[i] == 1 &amp;&amp; drone_capability[i] == cap)
+       {        
+           dist = linear_distance(leader_position, drone_location_x[i], drone_location_y[i]);
+           if(dist &gt; 0 &amp;&amp; dist &lt; 9){
+                drone_time[i] = time_to_swarm[dist-1];
+           }              
+       }
+    }
+}
+
+
+// Move closer to the goal, if haven't reached it yet
+void move(int id){
+    if (drone_location_x[id] != goal_location[0]){
+         drone_location_x[id] = drone_location_x[id] + 1;
+         drone_battery[id] -= 1;
+     }
+    else {
+        if (drone_location_y[id] != goal_location[1])
+          drone_location_y[id] = drone_location_y[id] + 1;
+          drone_battery[id] -= 1; 
+    }
+
+    if(is_leader(id)) update_leader_position(id);
+
+    x = drone_location_x[id];
+    y = drone_location_y[id];
+}
+
+ 
+
+// function for drone to cast vote for leader election
+void vote(int id){
+
+     for (i : int[0,N-1])
+     {
+         if(drone_status[i] == -1 &amp;&amp; drone_capability[i] == 1)
+         {
+             votes[id]=i;
+         }
+
+     }
+    vote_counter++;
+}
+
+int find_min(int arr[N], int capability){
+
+    int min = 100;
+
+    for(i:int[0,N-1])
+     {
+        if(drone_capability[i] == capability &amp;&amp; drone_candidates[i] == 1)
+       {     
+            if(arr[i] != 0 &amp;&amp; arr[i]&lt;min)
+            {
+                min = arr[i];
+            }
+       } 
+    }
+    return min;
+}
+
+
+// function for drone to cast vote on member election
+void vote_member(int id){
+
+    
+    for (i : int[0,N-1])
+    {
+       if(drone_candidates[i] == 1)
+       {
+          int current_drone = find_drone_in_swarm(drone_capability[i]);//problem is: taking min time from different capability 
+          calculate_drone_times(drone_capability[i]);
+          min_time = find_min(drone_time, drone_capability[current_drone]);        
+          if(drone_time[i] == min_time)
+          {
+              if((drone_battery[current_drone]&lt;50) &amp;&amp; drone_battery[i] &gt; drone_battery[current_drone])
+            {
+              //vote for drone to be part of the swarm
+              member_votes[id] = i;  
+            }
+          }
+       }     
+    }  
+}
+
+
+</declaration>
+		<location id="id0" x="-136" y="195">
+			<name x="-127" y="170">Idle</name>
+		</location>
+		<location id="id1" x="272" y="195">
+			<name x="178" y="170">InSwarm</name>
+		</location>
+		<location id="id2" x="272" y="42">
+			<name x="221" y="8">Leader</name>
+		</location>
+		<location id="id3" x="654" y="-34">
+			<name x="612" y="-17">WaitingSwarm</name>
+		</location>
+		<location id="id4" x="629" y="195">
+			<name x="595" y="161">UpdatingLocation</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="102" y="246">in_swarm(id)</label>
+			<label kind="synchronisation" x="85" y="263">member_election?</label>
+			<label kind="assignment" x="51" y="280">vote_member(id), vote_counter++</label>
+			<nail x="178" y="255"/>
+			<nail x="229" y="280"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="guard" x="314" y="85">is_leader(id) == false</label>
+			<nail x="331" y="127"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4"/>
+			<label kind="guard" x="323" y="153">reached_goal(id) == false &amp;&amp; in_swarm(id)</label>
+			<label kind="synchronisation" x="366" y="170">update_location?</label>
+			<label kind="assignment" x="383" y="195">move(id)</label>
+			<nail x="341" y="195"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="93" y="136">in_swarm(id)</label>
+			<label kind="synchronisation" x="178" y="119">election?</label>
+			<label kind="assignment" x="195" y="136">vote(id)</label>
+			<nail x="161" y="136"/>
+			<nail x="255" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="0" y="85">is_leader(id)&amp;&amp;vote_counter==Needed
+&amp;&amp;updating_mission==true</label>
+			<label kind="assignment" x="93" y="68">update_leader_position(id)</label>
+			<nail x="272" y="153"/>
+			<nail x="272" y="127"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="0" y="17">mission_end?</label>
+			<nail x="0" y="42"/>
+			<nail x="-136" y="42"/>
+			<nail x="-136" y="161"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="34" y="204">mission_end?</label>
+			<nail x="161" y="229"/>
+			<nail x="161" y="229"/>
+			<nail x="-17" y="229"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="663" y="93">location_updated!</label>
+			<label kind="assignment" x="663" y="76">vote_counter = 0</label>
+			<nail x="654" y="340"/>
+			<nail x="314" y="340"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="8" y="331">in_swarm(id) == false</label>
+			<label kind="synchronisation" x="25" y="306">update_status?</label>
+			<nail x="272" y="331"/>
+			<nail x="-136" y="331"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="399" y="246">location_updated?</label>
+			<nail x="629" y="272"/>
+			<nail x="322" y="272"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="guard" x="280" y="-93">swarm_reached_goal() == false &amp;&amp; is_leader(id) 
+&amp;&amp; updating_mission == true</label>
+			<label kind="synchronisation" x="340" y="-59">update_location!</label>
+			<label kind="assignment" x="340" y="-34">move(id)</label>
+			<nail x="271" y="-34"/>
+			<nail x="517" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="51" y="170">in_swarm(id)</label>
+			<label kind="synchronisation" x="-51" y="170">update_status?</label>
+		</transition>
+	</template>
+	<template>
+		<name>MissionControl</name>
+		<declaration>
+// function to reset array 
+void reset_arrays(){
+
+    for(i:int[0,N-1])
+    {    
+        drone_candidates[i] = 0;
+        drone_time[i] = 0;   
+    }
+}
+
+
+// check if leader position is the same as fire/target position
+    bool check_leader_pos(){
+      if(leader_position[0] == goal[0] &amp;&amp; leader_position[1] == goal[1])
+          return true;
+      else
+          return false; 
+    }
+
+// Check if drone is in swarm
+    bool in_swarm(int id){
+        return drone_status[id] != 0;
+    }
+
+// Find the current drone in the swarm with capability return its id
+    int find_drone_in_swarm(int capability){
+        for (id : int[0,N-1])
+        {
+            if(drone_status[id] != 0 &amp;&amp; drone_capability[id] == capability) {
+                return id;
+            }
+        }
+        return -1;
+    }
+
+ // Leader only stops issuing move commands if everybody reached location.
+    // Mission is only complete when swarm reached goal
+    bool swarm_reached_goal(){
+        bool reached = true;
+        for (id : int[0,N-1])
+        {
+            if(in_swarm(id))
+            {
+                reached = reached &amp;&amp; drone_location_x[id] == goal_location[0] &amp;&amp; drone_location_y[id] == goal_location[1];
+            }
+        }
+        return reached;
+    } 
+
+// linear_distance() function returns the calculated linear distance i.e the linear distance of the drone from the requesting node
+
+    int linear_distance(int goal[2], int a, int b) {
+        int x_coord = goal[0];
+        int y_coord = goal[1];
+
+        int xsquare = (x_coord-a)*(x_coord-a);
+        int ysquare = (y_coord-b)*(y_coord-b);
+        int sum1 = xsquare + ysquare;
+        sum1 = fint(sqrt(sum1));
+        return sum1; // fint fucntion converts boolean or floating point value to integer
+    }
+
+   
+
+
+ // This assumes leader drone is located at the GS when mission first starts
+    bool within_reach(int x, int y){
+        if( linear_distance(leader_position, x, y) &lt;= comm_reach)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+
+// function that determines if the capability if needed for the mission
+bool is_capabilities_needed(int capability)
+{
+    for (i : int[0,2])
+    {
+        if(mission_capabilities[i] == capability) return true;
+    }
+        return false;
+}
+
+
+// maybe add a counter here that goes through capabilities needed in this mission and find possible members on each iteration of sim
+
+int possible_member(){
+
+    for (i : int[0,N-1])
+    {
+        if(drone_status[i] == 0 &amp;&amp; drone_battery[i] &gt; 49 &amp;&amp; within_reach(drone_location_x[i], drone_location_y[i]) &amp;&amp; is_capabilities_needed(drone_capability[i]))
+        {   
+            drone_candidates[i] = 1;
+            candidate_counter++;
+        }
+    }    
+    return candidate_counter;
+}
+
+    //checks the results of the votes for leader to see if concensus was achieved
+    bool voting_results(int check_votes[Needed]){
+
+        for (i : int[0,Needed-2])
+        {
+            if (check_votes[i] != check_votes[i + 1])
+                return true;
+        }
+         return false;
+    }
+
+
+    // based on the result of the election, this function assigns a leader drone
+    void elect_leader(){
+    
+      for (i : int[0,Needed-1])
+      {
+        int cap = mission_capabilities[i];
+        id_voter = find_drone_in_swarm(cap); 
+        check_votes[i]=votes[id_voter];   
+        
+      }
+        
+      if(voting_results(check_votes)==false)
+      {
+        drone_status[votes[id_voter]] = 1;
+      }
+
+      voting_in_prog = false;
+      updating_mission = true;
+
+     }
+
+ // based on the result of the election, this function assigns a member drone
+    void elect_members(){
+    
+       if(vote_counter == Needed)
+       { 
+           for (i : int[0,Needed-1])
+           {
+               int cap = mission_capabilities[i];
+               id_voter = find_drone_in_swarm(cap); 
+               check_member_votes[i] = member_votes[id_voter];   
+           }
+        
+          if(voting_results(check_member_votes)==false)
+          {
+            //get id of drone already in swarm with same capability as candidate to join (id)
+            int curr_id = find_drone_in_swarm(drone_capability[member_votes[id_voter]]);
+            drone_status[curr_id] = 0;
+            drone_status[member_votes[id_voter]] = -1;
+            
+          }
+          
+          voting_in_prog = false;
+       }
+    
+        updating_mission = true;
+        candidate_counter = 0;
+        vote_counter = 0;
+        reset_arrays();
+
+     }
+    
+
+ 
+</declaration>
+		<location id="id5" x="-272" y="195">
+			<name x="-289" y="161">Start</name>
+		</location>
+		<location id="id6" x="136" y="195">
+			<name x="85" y="204">ElectMembers</name>
+		</location>
+		<location id="id7" x="578" y="195">
+			<name x="552" y="161">MissionStarted</name>
+		</location>
+		<location id="id8" x="-93" y="195">
+			<name x="-144" y="161">CheckMembers</name>
+		</location>
+		<location id="id9" x="756" y="195">
+			<name x="748" y="161">MissionAccomplished</name>
+		</location>
+		<location id="id10" x="365" y="195">
+			<name x="323" y="221">LeaderElection</name>
+		</location>
+		<location id="id11" x="221" y="195">
+			<name x="170" y="221">UpdateMembers</name>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="246" y="178">update_status!</label>
+			<label kind="assignment" x="229" y="204">updating_mission = true</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="guard" x="25" y="85">updating_mission==true</label>
+			<label kind="synchronisation" x="43" y="68">member_election!</label>
+			<label kind="assignment" x="26" y="51">updating_mission=false</label>
+			<nail x="94" y="153"/>
+			<nail x="51" y="110"/>
+			<nail x="102" y="110"/>
+			<nail x="161" y="110"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id7"/>
+			<label kind="guard" x="391" y="170">vote_counter == Needed</label>
+			<label kind="synchronisation" x="433" y="212">update_status!</label>
+			<label kind="assignment" x="416" y="195">elect_leader()</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="guard" x="246" y="51">vote_counter == 0 &amp;&amp; updating_mission == true</label>
+			<label kind="synchronisation" x="348" y="68">election!</label>
+			<label kind="assignment" x="297" y="93">updating_mission = false</label>
+			<nail x="281" y="93"/>
+			<nail x="408" y="93"/>
+			<nail x="459" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id9"/>
+			<label kind="guard" x="595" y="127">swarm_reached_goal()</label>
+			<label kind="synchronisation" x="637" y="144">mission_end!</label>
+			<label kind="assignment" x="596" y="195">updating_mission = 0</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-59" y="178">updating_mission == true</label>
+			<label kind="synchronisation" x="-25" y="161">update_status!</label>
+			<label kind="assignment" x="-34" y="195">possible_member()</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="-289" y="212">goal_location[0] = goal[0], 
+goal_location[1] = goal[1]</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="178" y="271">location_updated?</label>
+			<label kind="assignment" x="68" y="289">updating_mission = true, vote_counter=0, reset_arrays()</label>
+			<nail x="578" y="263"/>
+			<nail x="-93" y="263"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id11"/>
+			<label kind="guard" x="153" y="127">updating_mission == false</label>
+			<label kind="assignment" x="153" y="161">elect_members()</label>
+		</transition>
+	</template>
+	<system>//Mission related parameters
+
+//drone instantiation
+Drone0 = Drone(0, drone_capability[0], drone_battery[0]);
+Drone1 = Drone(1, drone_capability[1], drone_battery[1]);
+Drone2 = Drone(2, drone_capability[2], drone_battery[2]);
+Drone3 = Drone(3, drone_capability[3], drone_battery[3]);
+Drone4 = Drone(4, drone_capability[4], drone_battery[4]);
+Drone5 = Drone(5, drone_capability[5], drone_battery[5]);
+Drone6 = Drone(6, drone_capability[6], drone_battery[6]);
+Drone7 = Drone(7, drone_capability[7], drone_battery[7]);
+
+//mission instance
+MissionC = MissionControl();
+
+//system definition
+system MissionC, Drone0, Drone1, Drone2, Drone3, Drone4, Drone5, Drone6, Drone7;</system>
+	<queries>
+		<query>
+			<formula>A[] (vote_counter == Needed || vote_counter == 0)</formula>
+			<comment>The number of votes is alwasy equal to 0 (if no votation occurs) or 3 which is the needed votes (tere are always 3 drones in the swarm)</comment>
+		</query>
+		<query>
+			<formula>A[] deadlock imply (MissionC.MissionAccomplished)</formula>
+			<comment>if a deadlock exists anywhere it means that mission was accomplished</comment>
+		</query>
+		<query>
+			<formula>A[] ((drone_status[0] + drone_status[1]+ drone_status[2]+ drone_status[3]+ drone_status[4]+ drone_status[5]+ drone_status[6]+ drone_status[7]) &lt;= 0)</formula>
+			<comment>This property checks that there is never more than one leader in the swarm. Drone status is represented as -1 for in swarm, 0 for idle, and 1 for leader. Therefore, if the total 
+number of drones in the swarm at any point is 3, the sum of their status values must be negative to respect the one leader policy.
+</comment>
+		</query>
+		<query>
+			<formula>A[]((abs(drone_status[0]) + abs(drone_status[1])+ abs(drone_status[2])+ abs(drone_status[3])+ abs(drone_status[4])+ abs(drone_status[5])+ abs(drone_status[6])+ abs(drone_status[7])) == Needed)</formula>
+			<comment>This property complements the property verified above. Considering again that drone status -1 means in swarm, 0 means idle, and 1 means leader: the number of drones in the swarm
+at any point of the missions is equal to the absolute value of the sum of their status values. This property verifies that always globally there are 3 drones in the swarm. </comment>
+		</query>
+		<query>
+			<formula>A[] forall(i:int[0,7])(drone_status[i] == 1 imply drone_capability[i] == 1)</formula>
+			<comment>property that verifies if any drone is a leader then its capability is communicator </comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; drone_status[0] == 0 imply Drone0.Idle</formula>
+			<comment>This property verifies that if a drone is not part of the swarm anymore then it always eventually goes to state Idle.</comment>
+		</query>
+		<query>
+			<formula>A[] forall(i:int[0,7])(drone_status[i] == -1 || drone_status[i] == 1) imply drone_battery[i] &gt;= 49</formula>
+			<comment>This property verifies that drones in the swarm must have at least 49 battery to be part of the swarm. </comment>
+		</query>
+	</queries>
+</nta>
