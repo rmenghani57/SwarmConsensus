@@ -77,23 +77,65 @@
     <include>
       <uri>model://sun</uri>
     </include>
+    
+    <!-- Adding drones and their initial positions manually-->
+
+    <model name="drone0">
+      <pose> 10 12 0 0 0 0</pose>
+      <include>
+        <uri>model://drone0</uri>
+      </include>
+    </model>
+        
     <model name="drone1">
-      <pose> 0 0 0 0 0 0</pose>
+      <pose> 60 20 0 0 0 0</pose>
       <include>
         <uri>model://drone1</uri>
       </include>
     </model>
     <model name="drone2">
-      <pose> 0 -5 0 0 0 1.57</pose>
+      <pose> 14 10 0 0 0 1.57</pose>
       <include>
         <uri>model://drone2</uri>
       </include>
     </model>
     <model name="drone3">
-      <pose> 5 -5 0 0 0 3.14</pose>
+      <pose> 10 17 0 0 0 3.14</pose>
       <include>
         <uri>model://drone3</uri>
       </include>
     </model>
+
+    <model name="drone4">
+      <pose> 15 10 0 0 0 3.14</pose>
+      <include>
+        <uri>model://drone4</uri>
+      </include>
+    </model>
+
+    <model name="drone5">
+      <pose> 10 20 0 0 0 3.14</pose>
+      <include>
+        <uri>model://drone5</uri>
+      </include>
+    </model>
+
+    <model name="drone6">
+      <pose> 20 10 0 0 0 3.14</pose>
+      <include>
+        <uri>model://drone6</uri>
+      </include>
+    </model>
+
+    <model name="drone7">
+      <pose> 20 10 0 0 0 3.14</pose>
+      <include>
+        <uri>model://drone7</uri>
+      </include>
+    </model>    
+
+
+
+    
   </world>
 </sdf>
