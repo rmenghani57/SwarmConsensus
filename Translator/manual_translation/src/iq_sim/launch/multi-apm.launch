@@ -1,8 +1,8 @@
 <launch>
-	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone1">
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone0">
 		<param name="fcu_url" value="udp://127.0.0.1:14551@14555" />
 		<param name="gcs_url" value="" />
-		<param name="target_system_id" value="1" />
+		<param name="target_system_id" value="1" />  <!-- 0 is not permitted, range 1 to 255, so drone 0 will have 1 as id -->
 		<param name="target_component_id" value="1" />
 		<param name="fcu_protocol" value="v2.0" />
 
@@ -11,7 +11,7 @@
 		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
 	</node>
 
-	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone2">
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone1">
 		<param name="fcu_url" value="udp://127.0.0.1:14561@14565" />
 		<param name="gcs_url" value="" />
 		<param name="target_system_id" value="2" />
@@ -22,7 +22,8 @@
 		<rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
 		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
 	</node>
-	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone3">
+
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone2">
 		<param name="fcu_url" value="udp://127.0.0.1:14571@14575" />
 		<param name="gcs_url" value="" />
 		<param name="target_system_id" value="3" />
@@ -33,4 +34,65 @@
 		<rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
 		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
 	</node>
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone3">
+		<param name="fcu_url" value="udp://127.0.0.1:14581@14585" />
+		<param name="gcs_url" value="" />
+		<param name="target_system_id" value="4" />
+		<param name="target_component_id" value="1" />
+		<param name="fcu_protocol" value="v2.0" />
+
+		<!-- load blacklist, config -->
+		<rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
+		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
+	</node>
+
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone4">
+		<param name="fcu_url" value="udp://127.0.0.1:14591@14595" />
+		<param name="gcs_url" value="" />
+		<param name="target_system_id" value="5" />
+		<param name="target_component_id" value="1" />
+		<param name="fcu_protocol" value="v2.0" />
+
+		<!-- load blacklist, config -->
+		<rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
+		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
+	</node>
+
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone5">
+		<param name="fcu_url" value="udp://127.0.0.1:14611@14615" />    <!-- not sure if these numbers are in range for udp -->
+		<param name="gcs_url" value="" />
+		<param name="target_system_id" value="6" />
+		<param name="target_component_id" value="1" />
+		<param name="fcu_protocol" value="v2.0" />
+
+		<!-- load blacklist, config -->
+		<rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
+		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
+	</node>
+
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone6">
+		<param name="fcu_url" value="udp://127.0.0.1:14621@14625" />
+		<param name="gcs_url" value="" />
+		<param name="target_system_id" value="7" />
+		<param name="target_component_id" value="1" />
+		<param name="fcu_protocol" value="v2.0" />
+
+		<!-- load blacklist, config -->
+		<rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
+		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
+	</node>
+
+	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone7">
+		<param name="fcu_url" value="udp://127.0.0.1:14631@14635" />
+		<param name="gcs_url" value="" />
+		<param name="target_system_id" value="8" />
+		<param name="target_component_id" value="1" />
+		<param name="fcu_protocol" value="v2.0" />
+
+		<!-- load blacklist, config -->
+		<rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
+		<rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />
+	</node>
+
+
 </launch>
