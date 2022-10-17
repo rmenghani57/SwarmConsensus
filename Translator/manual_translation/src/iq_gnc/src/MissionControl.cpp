@@ -15,11 +15,48 @@ int main(int argc, char** argv)
 
     ros::Rate rate(1.0);
 
+
+    // define TA states as enum
+    enum STATES 
+    {
+        Start, CheckMembers, ElectMembers, UpdateMembers, LeaderElection, MissionStarted, MissionAccomplished
+    } STATE;
+
+    STATE = Start;
+
     while(ros::ok()){
 
         ros::spinOnce();
 
-        
+        switch(STATE){
+
+            case Start:
+                nh.setParam("/goal_location", ng.getParam(goal);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
         
 
 
