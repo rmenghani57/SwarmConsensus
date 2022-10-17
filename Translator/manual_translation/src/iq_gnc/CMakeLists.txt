@@ -200,20 +200,22 @@ include_directories(
 # Solutions 
 
 
-add_executable(square src/square.cpp)
-target_link_libraries(square ${catkin_LIBRARIES})
+#add_executable(square src/square.cpp)
+#target_link_libraries(square ${catkin_LIBRARIES})
 
-add_executable(drone src/drone.cpp)
-target_link_libraries(drone ${catkin_LIBRARIES})
+# Added
+add_executable(drone src/Drpne.cpp)
+target_link_libraries(Drone ${catkin_LIBRARIES})
 
-add_executable(input src/input.cpp)
-target_link_libraries(input ${catkin_LIBRARIES})
+#add_executable(input src/input.cpp)
+#target_link_libraries(input ${catkin_LIBRARIES})
 
-add_executable(server src/server.cpp)
-target_link_libraries(server ${catkin_LIBRARIES})
+# Added
+add_executable(MissionControl src/MissionControl.cpp)
+target_link_libraries(MissionControl ${catkin_LIBRARIES})
 
-add_executable(gnc_example src/gnc_tutorial.cpp)
-target_link_libraries(gnc_example ${catkin_LIBRARIES})
+#add_executable(gnc_example src/gnc_tutorial.cpp)
+#target_link_libraries(gnc_example ${catkin_LIBRARIES})
 
 #add_executable(sub_sol src/subscriber_sol.cpp)
 #target_link_libraries(sub_sol ${catkin_LIBRARIES})
