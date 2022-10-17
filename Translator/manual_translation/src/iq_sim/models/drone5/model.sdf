@@ -274,8 +274,8 @@
     </plugin>
     <plugin name="arducopter_plugin" filename="libArduPilotPlugin.so">
       <fdm_addr>127.0.0.1</fdm_addr>
-      <fdm_port_in>9022</fdm_port_in>
-      <fdm_port_out>9023</fdm_port_out>
+      <fdm_port_in>9052</fdm_port_in>
+      <fdm_port_out>9053</fdm_port_out>
       <!--
           Require by APM :
           Only change model and gazebo from XYZ to XY-Z coordinates
