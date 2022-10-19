@@ -141,7 +141,7 @@ public:
 		  {
 		    if ((((drone_status[i] == 0) && (drone_battery[i] > 49)) && within_reach(drone_location_x[i], drone_location_y[i])) && is_capabilities_needed(drone_capability[i]))
 		    {
-		      drone_candidates[i] = 1;
+		      drone_candidates[i] = 1;    // these need to get set on the parameter server
 		      candidate_counter++;
 		    }
 		  }

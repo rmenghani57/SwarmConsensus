@@ -4,11 +4,21 @@
 #include <chrono>
 using namespace std;
 
+// locally global variables to use in callback functions
+int update_status_var;
+int member_election_var;
 
-void statusCallback(int msg){
 
-    ROS_INFO("update_stautus = [%d]", msg);
+void statusCallback(int update_status){
 
+    ROS_INFO("update_stautus = [%d]", update_status);
+    update_status_var = update_status;
+
+}
+
+void memberElectionCallback(int member_election){
+    ROS_INFO("member_election = [%d]", member_election);
+    member_election_var = member_election;
 }
 
 int main(int argc, char** argv)
@@ -26,7 +36,11 @@ int main(int argc, char** argv)
     init_publisher_subscriber(nh);
 
     //whenever new message in topic update_status, statusCallback func is called
-    ros::Subscriber update_status_sub = nh.subscribe("update_status", 1, statusCallback);
+    ros::Subscriber update_status_sub = nh.subscribe("update_status", statusCallback);
+
+    //whenever new message in topic member_election, statusCallback func is called
+    ros::Subscriber member_election_sub = nh.subscribe("member_election", memberElectionCallback);
+
 
     // do i instantiate 8 drone objects? but there are already 8 drone nodes in launch file, so this file will run 8 times in parallel?
 
@@ -38,7 +52,8 @@ int main(int argc, char** argv)
     // define TA states as enum
     enum STATES 
     {
-        Idle, InSwarm, Leader, UpdatingLocation. WaitingSwarm 
+        Idle, InSwarm, Leader, UpdatingLocation. WaitingSwarm    //check if this is correct or need strings
+
     } STATE;
 
     STATE = Idle;
@@ -50,7 +65,9 @@ int main(int argc, char** argv)
         switch(STATE){
 
             case Idle:
+                if(update_status_var == 1){
 
+                }
                 break;     
 
             case InSwarm:
