@@ -23,6 +23,10 @@ public:
 		    drone_time[i] = 0;
 		  }
 		
+		// added these two lines to set the parameters after they are updated
+		nh.setParam("/drone_time", drone_time);
+		nh.setParam("/drone_candidates", drone_candidates);
+
 	}
 	bool check_leader_pos()
 	{
@@ -40,6 +44,7 @@ public:
 		vector<int> drone_status;
 		nh.getParam("/drone_status", drone_status);
 		  return drone_status[id] != 0;
+
 	}
 	int find_drone_in_swarm(int capability)
 	{
@@ -49,7 +54,7 @@ public:
 		nh.getParam("/N", N);
 		vector<int> drone_status;
 		nh.getParam("/drone_status", drone_status);
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int id = 0; id < (N - 1); id++)
 		  {
 		    if ((drone_status[id] != 0) && (drone_capability[id] == capability))
 		    {
@@ -145,8 +150,9 @@ public:
 		      candidate_counter++;
 		    }
 		  }
-		
-		  return candidate_counter;
+		nh.setParam("/drone_candidates", drone_candidates);
+		nh.setParam("/candidate_counter", candidate_counter);
+		return candidate_counter;
 	}
 	bool voting_results()
 	{
@@ -187,10 +193,16 @@ public:
 		    check_votes[i] = votes[id_voter];
 		  }
 		
+		//added
+		nh.setParam("/check_votes", check_votes);
+		
 		  if (voting_results(check_votes) == false)
 		  {
 		    drone_status[votes[id_voter]] = 1;
 		  }
+
+		  nh.setParam("/drone_status", drone_status);
+
 		  voting_in_prog = false;
 		  updating_mission = true;
 	}
@@ -226,13 +238,18 @@ public:
 		      id_voter = find_drone_in_swarm(cap);
 		      check_member_votes[i] = member_votes[id_voter];
 		    }
-		
+
+			//added
+			nh.setParam("/check_member_votes", check_member_votes);
+
 		    if (voting_results(check_member_votes) == false)
 		    {
 		      int curr_id = find_drone_in_swarm(drone_capability[member_votes[id_voter]]);
 		      drone_status[curr_id] = 0;
 		      drone_status[member_votes[id_voter]] = -1;
 		    }
+			//added
+			nh.setParam("/drone_status", drone_status);
 		    voting_in_prog = false;
 		  }
 		  updating_mission = true;
