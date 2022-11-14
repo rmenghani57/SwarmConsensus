@@ -412,7 +412,7 @@ This function is called at the beginning of a program and will start of the comm
 This function takes our ros node handle as an input and initializes subcribers that will collect the necessary information from our autopilot. 
 @returns n/a
 */
-int init_publisher_subscriber(ros::NodeHandle controlnode)
+void init_publisher_subscriber(ros::NodeHandle controlnode)
 {
 	std::string ros_namespace;
 	if (!controlnode.hasParam("namespace"))
