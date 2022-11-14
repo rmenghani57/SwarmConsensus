@@ -37,9 +37,11 @@ int main(int argc, char** argv)
 
     //whenever new message in topic update_status, statusCallback func is called
     ros::Subscriber update_status_sub = nh.subscribe("update_status", statusCallback);
-
     //whenever new message in topic member_election, statusCallback func is called
     ros::Subscriber member_election_sub = nh.subscribe("member_election", memberElectionCallback);
+
+    //Publishers
+    ros::Publisher location_updated_pub = nh.advertise<int>("location_updated", 1);
 
 
     // do i instantiate 8 drone objects? but there are already 8 drone nodes in launch file, so this file will run 8 times in parallel?
