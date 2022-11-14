@@ -128,7 +128,7 @@
     </model>
 
     <model name="drone7">
-      <pose> 20 10 0 0 0 3.14</pose>
+      <pose> 20 12 0 0 0 3.14</pose>
       <include>
         <uri>model://drone7</uri>
       </include>
