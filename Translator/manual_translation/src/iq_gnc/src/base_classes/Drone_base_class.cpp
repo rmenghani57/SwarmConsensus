@@ -6,10 +6,14 @@ class Drone
 private:
 	int x;
 	int y;
+	//added
+	ros::NodeHandle nh;
+	int i;
+
 public:
-	Drone()
+	Drone(int i)
 	{
-		nh = ros::NodeHandle("~");
+		this->i = i;
 	}
 	bool is_leader(int id)
 	{
@@ -70,8 +74,9 @@ public:
 		nh.getParam("/drone_location_x", drone_location_x);
 		vector<int> drone_location_y;
 		nh.getParam("/drone_location_y", drone_location_y);
-		  leader_position[0] = drone_location_x[id];
-		  leader_position[1] = drone_location_y[id];
+		leader_position[0] = drone_location_x[id];
+		leader_position[1] = drone_location_y[id];
+		nh.setParam("/leader_position", leader_position);
 	}
 	bool reached_goal(int id)
 	{
@@ -171,6 +176,7 @@ public:
 		    if ((drone_status[i] == (-1)) && (drone_capability[i] == 1))
 		    {
 		      votes[id] = i;
+			  nh.setParam("/votes", votes);
 		    }
 		  }
 		
@@ -226,6 +232,7 @@ public:
 		        if ((drone_battery[current_drone] < 50) && (drone_battery[i] > drone_battery[current_drone]))
 		        {
 		          member_votes[id] = i;
+				  nh.setParam("/member_votes", member_votes);
 		        }
 		      }
 		    }

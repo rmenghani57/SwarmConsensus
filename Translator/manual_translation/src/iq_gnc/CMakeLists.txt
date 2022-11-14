@@ -214,8 +214,8 @@ target_link_libraries(Drone ${catkin_LIBRARIES})
 add_executable(MissionControl src/MissionControl.cpp)
 target_link_libraries(MissionControl ${catkin_LIBRARIES})
 
-#add_executable(gnc_example src/gnc_tutorial.cpp)
-#target_link_libraries(gnc_example ${catkin_LIBRARIES})
+add_executable(gnc_example src/gnc_tutorial.cpp)
+target_link_libraries(gnc_example ${catkin_LIBRARIES})
 
 #add_executable(sub_sol src/subscriber_sol.cpp)
 #target_link_libraries(sub_sol ${catkin_LIBRARIES})
