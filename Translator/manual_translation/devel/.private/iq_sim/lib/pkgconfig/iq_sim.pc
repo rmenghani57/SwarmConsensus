@@ -1,8 +1,0 @@
-prefix=/home/adi/ardu_ws/devel/.private/iq_sim
-
-Name: iq_sim
-Description: Description of iq_sim
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

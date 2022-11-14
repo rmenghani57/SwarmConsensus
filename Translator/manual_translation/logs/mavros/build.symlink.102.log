@@ -1,8 +1,0 @@
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/lib/libmavros.so, /home/adi/ardu_ws/devel/lib/libmavros.so)
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/lib/libmavros_plugins.so, /home/adi/ardu_ws/devel/lib/libmavros_plugins.so)
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/lib/mavros/mavros_node, /home/adi/ardu_ws/devel/lib/mavros/mavros_node)
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/lib/mavros/gcs_bridge, /home/adi/ardu_ws/devel/lib/mavros/gcs_bridge)
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/lib/pkgconfig/mavros.pc, /home/adi/ardu_ws/devel/lib/pkgconfig/mavros.pc)
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/lib/python2.7/dist-packages/mavros/__init__.py, /home/adi/ardu_ws/devel/lib/python2.7/dist-packages/mavros/__init__.py)
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/share/mavros/cmake/mavrosConfig.cmake, /home/adi/ardu_ws/devel/share/mavros/cmake/mavrosConfig.cmake)
-Linked: (/home/adi/ardu_ws/devel/.private/mavros/share/mavros/cmake/mavrosConfig-version.cmake, /home/adi/ardu_ws/devel/share/mavros/cmake/mavrosConfig-version.cmake)

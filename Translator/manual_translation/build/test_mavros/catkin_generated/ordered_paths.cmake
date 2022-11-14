@@ -1,1 +1,0 @@
-set(ORDERED_PATHS "/home/adi/ardu_ws/devel/.private/mavros/lib;/home/adi/ardu_ws/devel/.private/libmavconn/lib;/opt/ros/melodic/lib")
