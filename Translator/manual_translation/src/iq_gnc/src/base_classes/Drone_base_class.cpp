@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <gnc_functions.hpp>
+using namespace std;
 
 class Drone
 {
