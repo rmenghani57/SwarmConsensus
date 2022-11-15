@@ -5,10 +5,13 @@ using namespace std;
 class MissionControl
 {
 private:
+
+	ros::NodeHandle nh;
+
 public:
 	MissionControl()
 	{
-		nh = ros::NodeHandle("~");
+		
 	}
 	void reset_arrays()
 	{
