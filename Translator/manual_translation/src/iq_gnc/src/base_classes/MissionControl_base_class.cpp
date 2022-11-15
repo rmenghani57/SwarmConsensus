@@ -89,10 +89,10 @@ public:
 		
 		  return reached;
 	}
-	int linear_distance(int goal[2], int a, int b)
+	int linear_distance(vector<int> goal[2], int a, int b)
 	{
-		vector<int> goal;
-		nh.getParam("/goal", goal);
+		//vector<int> goal;
+		//nh.getParam("/goal", goal); does not like same name for argument and variable
 		int x_coord = goal[0];
 		int y_coord = goal[1];
 		int xsquare = (x_coord - a) * (x_coord - a);
@@ -158,12 +158,12 @@ public:
 		nh.setParam("/candidate_counter", candidate_counter);
 		return candidate_counter;
 	}
-	bool voting_results(int check_votes[])           // modified argument of function
+	bool voting_results(vector<int> check_votes[])           // modified argument of function
 	{
 		int Needed;
 		nh.getParam("/Needed", Needed);
-		vector<int> check_votes;
-		nh.getParam("/check_votes", check_votes);
+		//vector<int> check_votes;
+		//nh.getParam("/check_votes", check_votes);
 		  for (int i = 0; i < (Needed - 2); i++)
 		  {
 		    if (check_votes[i] != check_votes[i + 1])
