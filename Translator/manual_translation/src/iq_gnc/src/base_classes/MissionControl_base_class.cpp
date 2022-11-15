@@ -79,7 +79,7 @@ public:
 		vector<int> drone_location_x;
 		nh.getParam("/drone_location_x", drone_location_x);
 		  bool reached = true;
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int id = 0; id < (N - 1); id++)
 		  {
 		    if (in_swarm(id))
 		    {
@@ -89,17 +89,17 @@ public:
 		
 		  return reached;
 	}
-	int linear_distance()
+	int linear_distance(int goal[2], int a, int b)
 	{
 		vector<int> goal;
 		nh.getParam("/goal", goal);
-		  int x_coord = goal[0];
-		  int y_coord = goal[1];
-		  int xsquare = (x_coord - a) * (x_coord - a);
-		  int ysquare = (y_coord - b) * (y_coord - b);
-		  int sum1 = xsquare + ysquare;
-		  sum1 = fint(sqrt(sum1));
-		  return sum1;
+		int x_coord = goal[0];
+		int y_coord = goal[1];
+		int xsquare = (x_coord - a) * (x_coord - a);
+		int ysquare = (y_coord - b) * (y_coord - b);
+		int sum1 = xsquare + ysquare;
+		sum1 = int(sqrt(sum1));          // casting to integer
+		return sum1;
 	}
 	bool within_reach(int x,int y)
 	{
@@ -158,7 +158,7 @@ public:
 		nh.setParam("/candidate_counter", candidate_counter);
 		return candidate_counter;
 	}
-	bool voting_results()
+	bool voting_results(int check_votes[])           // modified argument of function
 	{
 		int Needed;
 		nh.getParam("/Needed", Needed);
