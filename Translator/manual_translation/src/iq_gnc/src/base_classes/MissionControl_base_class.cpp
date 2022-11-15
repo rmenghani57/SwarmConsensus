@@ -89,7 +89,7 @@ public:
 		
 		  return reached;
 	}
-	int linear_distance(vector<int> goal[2], int a, int b)
+	int linear_distance(vector<int> goal, int a, int b)
 	{
 		//vector<int> goal;
 		//nh.getParam("/goal", goal); does not like same name for argument and variable
@@ -158,7 +158,7 @@ public:
 		nh.setParam("/candidate_counter", candidate_counter);
 		return candidate_counter;
 	}
-	bool voting_results(vector<int> check_votes[])           // modified argument of function
+	bool voting_results(vector<int> check_votes)           // modified argument of function
 	{
 		int Needed;
 		nh.getParam("/Needed", Needed);
