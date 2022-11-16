@@ -155,7 +155,7 @@ int main(int argc, char** argv)
                 }
                 // InSwarm to Idle transition
                 if(ThisDrone->in_swarm(id) == false && update_status_var == 1){
-                    STATUS = Idle;
+                    STATE = Idle;
                 }
 
                 break;
