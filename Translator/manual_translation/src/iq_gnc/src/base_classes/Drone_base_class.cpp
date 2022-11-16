@@ -36,7 +36,7 @@ public:
 		nh.getParam("/N", N);
 		vector<int> drone_status;
 		nh.getParam("/drone_status", drone_status);
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int id = 0; id < (N - 1); id++)
 		  {
 		    if ((drone_status[id] != 0) && (drone_capability[id] == capability))
 		    {
@@ -57,7 +57,7 @@ public:
 		vector<int> drone_location_x;
 		nh.getParam("/drone_location_x", drone_location_x);
 		  bool reached = true;
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int id = 0; id < (N - 1); id++)
 		  {
 		    if (in_swarm(id))
 		    {
@@ -89,17 +89,18 @@ public:
 		nh.getParam("/drone_location_y", drone_location_y);
 		  return (drone_location_x[id] == goal_location[0]) && (drone_location_y[id] == goal_location[1]);
 	}
-	int linear_distance()
+	int linear_distance(vector<int> goal, int a, int b)
 	{
-		vector<int> goal;
-		nh.getParam("/goal", goal);
-		  int x_coord = goal[0];
-		  int y_coord = goal[1];
-		  int xsquare = (x_coord - a) * (x_coord - a);
-		  int ysquare = (y_coord - b) * (y_coord - b);
-		  int sum1 = xsquare + ysquare;
-		  sum1 = fint(sqrt(sum1));
-		  return sum1;
+		//vector<int> goal;
+		//nh.getParam("/goal", goal);
+
+		int x_coord = goal[0];
+		int y_coord = goal[1];
+		int xsquare = (x_coord - a) * (x_coord - a);
+		int ysquare = (y_coord - b) * (y_coord - b);
+		int sum1 = xsquare + ysquare;
+		sum1 = int(sqrt(sum1));
+		return sum1;
 	}
 	void calculate_drone_times(int cap)
 	{
@@ -183,7 +184,7 @@ public:
 		
 		  vote_counter++;
 	}
-	int find_min()
+	int find_min(vector<int> arr, int capability)
 	{
 		vector<int> drone_capability;
 		nh.getParam("/drone_capability", drone_capability);
