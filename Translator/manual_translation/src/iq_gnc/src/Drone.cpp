@@ -84,10 +84,10 @@ int main(int argc, char** argv)
 
 
     //Publishers
-    ros::Publisher location_updated_pub = nh.advertise<int>("location_updated", 1);
+    ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>("location_updated", 1);
 
     // publisher and subscriber in same node (here)
-    ros::Publisher update_location_pub = nh.advertise<int>("update_location", 1);
+    ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>("update_location", 1);
 
     // rate of 1 Hz
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
@@ -106,6 +106,10 @@ int main(int argc, char** argv)
     nh.getParam("/Needed", Needed);
 
     int updating_mission;
+
+    //define standard sybc msg
+    std_msg::Int8 sync;
+    sync = 1;
 
     // define TA states as enum
     enum STATES 
@@ -169,7 +173,7 @@ int main(int argc, char** argv)
                 }
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
-                    update_location_pub.publish(1);
+                    update_location_pub.publish(sync);
                     ThisDrone->move(id);
                     STATE = WaitingSwarm;
                 }
@@ -185,7 +189,7 @@ int main(int argc, char** argv)
             case WaitingSwarm:
                 nh.getParam("/vote_counter", vote_counter);
                 if(vote_counter == 0){
-                    location_updated_pub.publish(1);
+                    location_updated_pub.publish(sync);
                     STATE = InSwarm;
                 }
                 break;

@@ -28,10 +28,10 @@ int main(int argc, char** argv)
 
     // all publishers - each represents a channel in uppaal
     // this node publishes to the update_status topic which is an Uppaal channel (triggered in MissionControl Template)
-    ros::Publisher update_status_pub = nh.advertise<int>("update_status", 1);
-    ros::Publisher member_election_pub = nh.advertise<int>("member_election", 1);
-    ros::Publisher election_pub = nh.advertise<int>("leader_election", 1);
-    ros::Publisher mission_end_pub = nh.advertise<int>("mission_end", 1);
+    ros::Publisher update_status_pub = nh.advertise<std_msgs::Int8>("update_status", 1);
+    ros::Publisher member_election_pub = nh.advertise<std_msgs::Int8>("member_election", 1);
+    ros::Publisher election_pub = nh.advertise<std_msgs::Int8>("leader_election", 1);
+    ros::Publisher mission_end_pub = nh.advertise<std_msgs::Int8>("mission_end", 1);
 
     //subscribers
     ros::Subscriber location_updated_sub = nh.subscribe("location_updated", 1, locationUpdatedCallback);
@@ -54,6 +54,9 @@ int main(int argc, char** argv)
     int updating_mission; 
     int vote_counter;       
 
+    //define standard msg
+    std_msg::Int8 sync;
+    sync = 1;
 
     while(ros::ok()){
 
@@ -73,7 +76,7 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
                     MissionController->possible_member();
-                    update_status_pub.publish(1);
+                    update_status_pub.publish(sync);
                     STATE = ElectMembers;
                 }
                 break;
@@ -83,7 +86,7 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
                     nh.setParam("/updating_mission", false);
-                    member_election_pub.publish(1);
+                    member_election_pub.publish(sync);
                 }
                 if(updating_mission == false){
                     MissionController->elect_members();
@@ -93,7 +96,7 @@ int main(int argc, char** argv)
 
             case UpdateMembers:
                 nh.setParam("/updating_mission", true);
-                update_status_pub.publish(1);
+                update_status_pub.publish(sync);
                 STATE = LeaderElection;
                 break;     
 
@@ -104,14 +107,14 @@ int main(int argc, char** argv)
                 if(vote_counter == 0 && updating_mission == true){
                     updating_mission = false;
                     nh.setParam("/updating_mission", false);
-                    election_pub.publish(1);
+                    election_pub.publish(sync);
                 }
                 else{
                     int Needed;
                     nh.getParam("/Needed", Needed);
                     if(vote_counter == Needed){
                         MissionController->elect_leader();
-                        update_status_pub.publish(1);
+                        update_status_pub.publish(sync);
                         STATE = MissionStarted;
                     }                      
 
@@ -124,7 +127,7 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                
                 if(MissionController->swarm_reached_goal()){
-                    mission_end_pub.publish(1);
+                    mission_end_pub.publish(sync);
                     nh.setParam("/updating_mission", 0);   
                     STATE = MissionAccomplished;
                 }
