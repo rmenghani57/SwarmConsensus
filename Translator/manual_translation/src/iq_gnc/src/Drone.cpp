@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
     //define standard sybc msg
     std_msgs::Int8 sync;
-    sync = 1;
+    sync.data = 1;
 
     // define TA states as enum
     enum STATES 
