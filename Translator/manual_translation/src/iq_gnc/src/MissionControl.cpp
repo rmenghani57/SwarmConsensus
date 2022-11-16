@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     ros::Publisher mission_end_pub = nh.advertise<int>("mission_end", 1);
 
     //subscribers
-    ros::Subscriber location_updated_sub = nh.subscribe("location_updated", locationUpdatedCallback);
+    ros::Subscriber location_updated_sub = nh.subscribe("location_updated", 1, locationUpdatedCallback);
 
     // rate of 1 Hz  
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
