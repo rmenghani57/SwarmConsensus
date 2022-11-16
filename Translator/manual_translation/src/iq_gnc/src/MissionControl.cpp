@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     int vote_counter;       
 
     //define standard msg
-    std_msg::Int8 sync;
+    std_msgs::Int8 sync;
     sync = 1;
 
     while(ros::ok()){
