@@ -2,6 +2,8 @@
 #include "ros/ros.h"
 #include <thread>
 #include <chrono>
+#include <std_msgs/Int8.h>
+
 using namespace std;
 
 // locally global variables to use in callback functions
