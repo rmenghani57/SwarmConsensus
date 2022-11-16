@@ -50,6 +50,11 @@ int main(int argc, char** argv)
 
     STATE = Start;
 
+    //fixing re declaration errors
+    int updating_mission; 
+    int vote_counter;       
+
+
     while(ros::ok()){
 
         ros::spinOnce();
@@ -64,7 +69,7 @@ int main(int argc, char** argv)
                 break;
                 
             case CheckMembers:
-                int updating_mission;       
+                      
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
                     MissionController->possible_member();
@@ -74,28 +79,27 @@ int main(int argc, char** argv)
                 break;
 
             case ElectMembers:
-                int updating_mission;       
+                     
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
-                    nh.setParam("/updating_mission", false)
+                    nh.setParam("/updating_mission", false);
                     member_election_pub.publish(1);
                 }
                 if(updating_mission == false){
-                    MissionController.elect_members();
+                    MissionController->elect_members();
                     STATE = UpdateMembers;
                 }
                 break;
 
             case UpdateMembers:
-                nh.setParam("/updating_mission", true)
+                nh.setParam("/updating_mission", true);
                 update_status_pub.publish(1);
                 STATE = LeaderElection;
                 break;     
 
             case LeaderElection:
-                int vote_counter;       
                 nh.getParam("/vote_counter", vote_counter);
-                int updating_mission;       
+                     
                 nh.getParam("/updating_mission", updating_mission);
                 if(vote_counter == 0 && updating_mission == true){
                     updating_mission = false;
@@ -115,9 +119,8 @@ int main(int argc, char** argv)
                 break;
 
             case MissionStarted:
-                int vote_counter;
+            
                 nh.getParam("/vote_counter", vote_counter);
-                int updating_mission;
                 nh.getParam("/updating_mission", updating_mission);
                
                 if(MissionController->swarm_reached_goal()){
