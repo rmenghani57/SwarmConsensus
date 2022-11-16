@@ -66,21 +66,21 @@ int main(int argc, char** argv)
     init_publisher_subscriber(nh);
 
     //whenever new message in topic update_status, statusCallback func is called
-    ros::Subscriber update_status_sub = nh.subscribe("update_status", statusCallback);
+    ros::Subscriber update_status_sub = nh.subscribe("update_status", 1, statusCallback);
     //whenever new message in topic member_election, statusCallback func is called
-    ros::Subscriber member_election_sub = nh.subscribe("member_election", memberElectionCallback);
+    ros::Subscriber member_election_sub = nh.subscribe("member_election", 1, memberElectionCallback);
 
-    ros::Subscriber leader_election_sub = nh.subscribe("leader_election", leaderElectionCallback);
+    ros::Subscriber leader_election_sub = nh.subscribe("leader_election", 1, leaderElectionCallback);
 
     // both pub and sub for this topic in same node, could cause problems
-    ros::Subscriber update_location_sub = nh.subscribe("update_location", updateLocationCallback;
+    ros::Subscriber update_location_sub = nh.subscribe("update_location", 1, updateLocationCallback);
 
 
     // same as mission control template, might cause problems
-    ros::Subscriber location_updated_sub = nh.subscribe("location_updated", locationUpdatedCallback);
+    ros::Subscriber location_updated_sub = nh.subscribe("location_updated", 1, locationUpdatedCallback);
 
     //mission end subscirber
-    ros::Subscriber mission_end_sub = nh.subscribe("mission_end", missionEndCallback);
+    ros::Subscriber mission_end_sub = nh.subscribe("mission_end", 1, missionEndCallback);
 
 
     //Publishers
