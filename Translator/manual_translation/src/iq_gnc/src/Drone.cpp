@@ -24,31 +24,31 @@ void locationUpdatedCallback(std_msgs::Int8 location_updated){
 }
 
 
-void statusCallback(int update_status){
+void statusCallback(std_msgs::Int8 update_status){
 
-    ROS_INFO("update_stautus = [%d]", update_status);
-    update_status_var = update_status;
+    ROS_INFO("update_stautus = [%d]", update_status.data);
+    update_status_var = update_status.data;
 
 }
 
-void memberElectionCallback(int member_election){
-    ROS_INFO("member_election = [%d]", member_election);
-    member_election_var = member_election;
+void memberElectionCallback(std_msgs::Int8 member_election){
+    ROS_INFO("member_election = [%d]", member_election.data);
+    member_election_var = member_election.data;
 }
 
-void leaderElectionCallback(int leader_election){
-    ROS_INFO("leader_election = [%d]", leader_election);
-    leader_election_var = leader_election;
+void leaderElectionCallback(std_msgs::Int8 leader_election){
+    ROS_INFO("leader_election = [%d]", leader_election.data);
+    leader_election_var = leader_election.data;
 }
 
-void updateLocationCallback(int update_location){
-    ROS_INFO("update_location = [%d]", update_location);
-    update_location_var = update_location;
+void updateLocationCallback(std_msgs::Int8 update_location){
+    ROS_INFO("update_location = [%d]", update_location.data);
+    update_location_var = update_location.data;
 }
 
-void missionEndCallback(int mission_end){
-    ROS_INFO("update_location = [%d]", mission_end);
-    mission_end_var = mission_end;
+void missionEndCallback(std_msgs::Int8 mission_end){
+    ROS_INFO("update_location = [%d]", mission_end.data);
+    mission_end_var = mission_end.data;
 }
 
 
