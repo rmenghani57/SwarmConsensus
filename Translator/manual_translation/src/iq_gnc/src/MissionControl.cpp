@@ -6,11 +6,11 @@
 
 using namespace std;
 
-std_msgs::Int8 location_updated_var;
+int location_updated_var;
 
-void locationUpdatedCallback(std_msgs::Int8 location_updated){
+void locationUpdatedCallback(int location_updated){
 
-    ROS_INFO("location_updated = [%d]", location_updated.data);
+    ROS_INFO("location_updated = [%d]", location_updated);
     location_updated_var = location_updated;
 
 }
