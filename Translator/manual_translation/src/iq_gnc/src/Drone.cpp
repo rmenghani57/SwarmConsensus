@@ -137,6 +137,7 @@ int main(int argc, char** argv)
             case Idle:
                 // idle to in swarm
                 if(update_status_var == 1 && ThisDrone->in_swarm(id)){
+                    takeoff(3);
                     STATE = InSwarm;
                 }
                 break;     
