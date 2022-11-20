@@ -48,5 +48,5 @@
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
-  <node pkg="iq_gnc" type="MissionControl" name="MissionControl0"/>
+  <node pkg="iq_gnc" type="MissionControl" name="MissionControl0" output="screen"/>
 </launch>
