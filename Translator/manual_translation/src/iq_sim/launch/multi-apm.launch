@@ -59,7 +59,7 @@
 	</node>
 
 	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone5">
-		<param name="fcu_url" value="udp://127.0.0.1:14611@14615" />    <!-- not sure if these numbers are in range for udp -->
+		<param name="fcu_url" value="udp://127.0.0.1:14601@14605" />    <!-- not sure if these numbers are in range for udp -->
 		<param name="gcs_url" value="" />
 		<param name="target_system_id" value="6" />
 		<param name="target_component_id" value="1" />
@@ -71,7 +71,7 @@
 	</node>
 
 	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone6">
-		<param name="fcu_url" value="udp://127.0.0.1:14621@14625" />
+		<param name="fcu_url" value="udp://127.0.0.1:14611@14615" />
 		<param name="gcs_url" value="" />
 		<param name="target_system_id" value="7" />
 		<param name="target_component_id" value="1" />
@@ -83,7 +83,7 @@
 	</node>
 
 	<node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" ns="/drone7">
-		<param name="fcu_url" value="udp://127.0.0.1:14631@14635" />
+		<param name="fcu_url" value="udp://127.0.0.1:14621@14625" />
 		<param name="gcs_url" value="" />
 		<param name="target_system_id" value="8" />
 		<param name="target_component_id" value="1" />
