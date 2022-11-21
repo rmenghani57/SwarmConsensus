@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nh("~");
 
     // wait for FCU connection
-    wait4connect();
+    //wait4connect();
     
     // changing mode to GUIDED 
     set_mode("GUIDED");
