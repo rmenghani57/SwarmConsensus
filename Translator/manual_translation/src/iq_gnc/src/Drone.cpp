@@ -61,17 +61,19 @@ int main(int argc, char** argv)
     // private node handle
     ros::NodeHandle nh("~");
 
+    // explanation on this?
+    // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
+    // This function takes our ros node handle as an input and initializes subcribers that will collect the necessary information from our autopilot. 
+    // @returns n/a
+    init_publisher_subscriber(nh);
+
     // wait for FCU connection
     wait4connect();
     
     // changing mode to GUIDED 
     set_mode("GUIDED");
 
-    // explanation on this?
-    // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
-    // This function takes our ros node handle as an input and initializes subcribers that will collect the necessary information from our autopilot. 
-    // @returns n/a
-    init_publisher_subscriber(nh);
+    
 
     //whenever new message in topic update_status, statusCallback func is called
     ros::Subscriber update_status_sub = nh.subscribe("update_status", 1, statusCallback);

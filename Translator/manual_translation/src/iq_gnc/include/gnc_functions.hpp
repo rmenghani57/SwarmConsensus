@@ -179,6 +179,8 @@ int wait4connect()
 	// wait for FCU connection
 	while (ros::ok() && !current_state_g.connected)
 	{
+		ROS_INFO("ROS IS OK");
+		
 		ros::spinOnce();
 		ros::Duration(0.01).sleep();
 	}
