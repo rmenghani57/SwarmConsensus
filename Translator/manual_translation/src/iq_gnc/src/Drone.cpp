@@ -57,12 +57,12 @@ int main(int argc, char** argv)
 {
 
     // initialize ROS
-    ros::init(argc, argv, "MissionControl_node");
+    ros::init(argc, argv, "Drone_node");
     // private node handle
     ros::NodeHandle nh("~");
 
     // wait for FCU connection
-    //wait4connect();
+    wait4connect();
     
     // changing mode to GUIDED 
     set_mode("GUIDED");
