@@ -82,6 +82,16 @@ int main(int argc, char** argv)
 	//	ROS_INFO("Mode set to GUIDED. Mission starting");
     //}
 
+	//create local reference frame 
+	initialize_local_frame();
+
+
+    // parse the argument passed in launch file to represent current drone id
+    int id = atoi(argv[1]);
+
+    // instantiate Drone class
+    Drone* ThisDrone = new Drone(id);
+
     //try taking off all drones? in stabilize mode
 
     takeoff(10);
@@ -99,16 +109,6 @@ int main(int argc, char** argv)
 	nextWayPoint.y = 60;
 	nextWayPoint.z = 10;
 	nextWayPoint.psi = 0;
-
-	//create local reference frame 
-	initialize_local_frame();
-
-
-    // parse the argument passed in launch file to represent current drone id
-    int id = atoi(argv[1]);
-
-    // instantiate Drone class
-    Drone* ThisDrone = new Drone(id);
     
 
     //whenever new message in topic update_status, statusCallback func is called
