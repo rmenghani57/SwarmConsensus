@@ -67,20 +67,24 @@ int main(int argc, char** argv)
     // @returns n/a
     init_publisher_subscriber(nh);
 
-    ROS_INFO("In main, after pub sub init, before wait4connect");
+    //ROS_INFO("In main, after pub sub init, before wait4connect");
 
     // wait for FCU connection
     //wait4connect();
     
-    ROS_INFO("Next Cmd is Set Guided Mode");
+    //ROS_INFO("Next Cmd is Set Guided Mode");
 
     // changing mode to GUIDED 
-    set_mode("GUIDED");
+    //set_mode("GUIDED");
 
-    if(current_state_g.mode == "GUIDED")
-	{
-		ROS_INFO("Mode set to GUIDED. Mission starting");
-    }
+    //if(current_state_g.mode == "GUIDED")
+	//{
+	//	ROS_INFO("Mode set to GUIDED. Mission starting");
+    //}
+
+    //try taking off all drones? in stabilize mode
+
+    takeoff(3);
 
 	//create local reference frame 
 	initialize_local_frame();
