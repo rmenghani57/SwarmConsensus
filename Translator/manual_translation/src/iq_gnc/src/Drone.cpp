@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     ROS_INFO("In main, after pub sub init, before wait4connect");
 
     // wait for FCU connection
-    wait4connect();
+    //wait4connect();
     
     ROS_INFO("Next Cmd is Set Guided Mode");
 
