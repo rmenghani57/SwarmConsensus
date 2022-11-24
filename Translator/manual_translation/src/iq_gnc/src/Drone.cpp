@@ -84,7 +84,21 @@ int main(int argc, char** argv)
 
     //try taking off all drones? in stabilize mode
 
-    takeoff(3);
+    takeoff(10);
+
+    //testing
+    //specify some waypoints 
+	std::vector<gnc_api_waypoint> waypointList;
+	gnc_api_waypoint nextWayPoint;
+	nextWayPoint.x = 30;
+	nextWayPoint.y = 30;
+	nextWayPoint.z = 10;
+	nextWayPoint.psi = 0;
+	waypointList.push_back(nextWayPoint);
+	nextWayPoint.x = 60;
+	nextWayPoint.y = 60;
+	nextWayPoint.z = 10;
+	nextWayPoint.psi = 0;
 
 	//create local reference frame 
 	initialize_local_frame();
@@ -151,6 +165,8 @@ int main(int argc, char** argv)
     while(ros::ok()){
 
         ros::spinOnce();
+
+        ROS_INFO("In while ros ok loop");
 
         switch(STATE){
 

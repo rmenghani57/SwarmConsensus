@@ -37,7 +37,7 @@
             </friction>
           </surface>
         </collision>
-        <visual name="runway">
+       <!--  <visual name="runway">
           <pose>000 0 0.005 0 0 0</pose>
           <cast_shadows>false</cast_shadows>
           <geometry>
@@ -52,7 +52,7 @@
               <name>Gazebo/Runway</name>
             </script>
           </material>
-        </visual>
+        </visual>-->
 
         <visual name="grass">
           <pose>0 0 -0.1 0 0 0</pose>
