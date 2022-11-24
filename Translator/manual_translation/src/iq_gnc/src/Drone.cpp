@@ -67,12 +67,30 @@ int main(int argc, char** argv)
     // @returns n/a
     init_publisher_subscriber(nh);
 
+    ROS_INFO("In main, after pub sub init, before wait4connect");
+
     // wait for FCU connection
     wait4connect();
     
+    ROS_INFO("Next Cmd is Set Guided Mode");
+
     // changing mode to GUIDED 
     set_mode("GUIDED");
 
+    if(current_state_g.mode == "GUIDED")
+	{
+		ROS_INFO("Mode set to GUIDED. Mission starting");
+    }
+
+	//create local reference frame 
+	initialize_local_frame();
+
+
+    // parse the argument passed in launch file to represent current drone id
+    int id = atoi(argv[1]);
+
+    // instantiate Drone class
+    Drone* ThisDrone = new Drone(id);
     
 
     //whenever new message in topic update_status, statusCallback func is called
@@ -103,11 +121,7 @@ int main(int argc, char** argv)
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
     ros::Rate rate(1.0);
 
-    // parse the argument passed in launch file to represent current drone id
-    int id = atoi(argv[1]);
-
-    // instantiate Drone class
-    Drone* ThisDrone = new Drone(id);
+    
 
     // local global variable to get and set vote counter variable
     int vote_counter;

@@ -176,11 +176,11 @@ Wait for connect is a function that will hold the program until communication wi
 int wait4connect()
 {
 	ROS_INFO("Waiting for FCU connection");
+	ROS_INFO("Current_state: %s", current_state_g.connected);
+
 	// wait for FCU connection
 	while (ros::ok() && !current_state_g.connected)
-	{
-		ROS_INFO("ROS IS OK");
-		
+	{	
 		ros::spinOnce();
 		ros::Duration(0.01).sleep();
 	}

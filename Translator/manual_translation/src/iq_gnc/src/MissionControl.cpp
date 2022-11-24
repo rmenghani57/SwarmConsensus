@@ -24,9 +24,14 @@ int main(int argc, char** argv)
     // private node handle
     ros::NodeHandle nh("~");
 
+    init_publisher_subscriber(nh);
+
+    //create local reference frame 
+	initialize_local_frame();
+
     MissionControl* MissionController = new MissionControl();
 
-    init_publisher_subscriber(nh);
+    
 
     // all publishers - each represents a channel in uppaal
     // this node publishes to the update_status topic which is an Uppaal channel (triggered in MissionControl Template)
