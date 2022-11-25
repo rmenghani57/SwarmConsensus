@@ -54,7 +54,7 @@
           </material>
         </visual>-->
 
-        <visual name="grass">
+       <!-- <visual name="grass">
           <pose>0 0 -0.1 0 0 0</pose>
           <cast_shadows>false</cast_shadows>
           <geometry>
@@ -69,14 +69,14 @@
               <name>Gazebo/Grass</name>
             </script>
           </material>
-        </visual>
+        </visual> -->
 
       </link>
-    </model>
+    </model> 
 
     <include>
       <uri>model://sun</uri>
-    </include>
+    </include> 
     
     <!-- Adding drones and their initial positions manually-->
 
