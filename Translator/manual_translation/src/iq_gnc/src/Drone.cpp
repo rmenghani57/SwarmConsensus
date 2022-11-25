@@ -66,7 +66,8 @@ int main(int argc, char** argv)
     Drone* ThisDrone = new Drone(id);
 
     // private node handle
-    ros::NodeHandle nh("~") = ThisDrone->nh;
+    ros::NodeHandle nh("~"); 
+    nh = ThisDrone->nh;
 
     // explanation on this?
     // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
