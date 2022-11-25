@@ -8,10 +8,11 @@ private:
 	int x;
 	int y;
 	int i;
+	//added
+	ros::NodeHandle nh;
 
 public:
-	//added
-	//ros::NodeHandle nh;
+	
 	Drone(int i)
 	{
 		this->i = i;
