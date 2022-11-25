@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 
     // rate of 1 Hz  
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
-    ros::Rate rate(1.0);
+    ros::Rate rate(2.0);
     // consider increasing freq to 10 Hz
 
 

@@ -93,9 +93,6 @@ int main(int argc, char** argv)
     Drone* ThisDrone = new Drone(id);
 
     //try taking off all drones? in stabilize mode
-
-    takeoff(10);
-
     //testing
     //specify some waypoints 
 	std::vector<gnc_api_waypoint> waypointList;
@@ -109,6 +106,8 @@ int main(int argc, char** argv)
 	nextWayPoint.y = 60;
 	nextWayPoint.z = 10;
 	nextWayPoint.psi = 0;
+
+    takeoff(10);
     
 
     //whenever new message in topic update_status, statusCallback func is called
@@ -137,7 +136,7 @@ int main(int argc, char** argv)
 
     // rate of 1 Hz
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
-    ros::Rate rate(1.0);
+    ros::Rate rate(2.0);
 
     
 
