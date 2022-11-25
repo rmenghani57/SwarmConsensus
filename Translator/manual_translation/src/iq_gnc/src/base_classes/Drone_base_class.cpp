@@ -11,7 +11,7 @@ private:
 
 public:
 	//added
-	ros::NodeHandle nh;
+	//ros::NodeHandle nh;
 	Drone(int i)
 	{
 		this->i = i;
