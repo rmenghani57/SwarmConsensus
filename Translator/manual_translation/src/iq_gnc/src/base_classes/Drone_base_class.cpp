@@ -7,11 +7,11 @@ class Drone
 private:
 	int x;
 	int y;
-	//added
-	ros::NodeHandle nh;
 	int i;
 
 public:
+	//added
+	ros::NodeHandle nh;
 	Drone(int i)
 	{
 		this->i = i;
