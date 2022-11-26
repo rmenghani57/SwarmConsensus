@@ -65,23 +65,20 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "drone_node");
 	ros::NodeHandle nh("~");
 	
-    //this->nh = droneNh;
     // instantiate Drone class
     Drone* ThisDrone = new Drone(id);
     
-    //ros::NodeHandle nh = ThisDrone->nh;
 
-    // explanation on this?
     // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
     // This function takes our ros node handle as an input and initializes subcribers that will collect the necessary information from our autopilot. 
     // @returns n/a
     init_publisher_subscriber(nh);
 
     // wait for FCU connection
-    //wait4connect();
+    wait4connect();
     
     // changing mode to GUIDED 
-    //set_mode("GUIDED");
+    set_mode("GUIDED");
 
     //if(current_state_g.mode == "GUIDED")
 	//{
@@ -93,21 +90,21 @@ int main(int argc, char** argv)
     
 
     //whenever new message in topic update_status, statusCallback func is called
-    ros::Subscriber update_status_sub = nh.subscribe("update_status", 1, statusCallback);
+    ros::Subscriber update_status_sub = nh.subscribe("MissionControl0/update_status", 1, statusCallback);
     //whenever new message in topic member_election, statusCallback func is called
-    ros::Subscriber member_election_sub = nh.subscribe("member_election", 1, memberElectionCallback);
+    ros::Subscriber member_election_sub = nh.subscribe("MissionControl0/member_election", 1, memberElectionCallback);
 
-    ros::Subscriber leader_election_sub = nh.subscribe("leader_election", 1, leaderElectionCallback);
+    ros::Subscriber leader_election_sub = nh.subscribe("MissionControl0/leader_election", 1, leaderElectionCallback);
 
     // both pub and sub for this topic in same node, could cause problems
-    ros::Subscriber update_location_sub = nh.subscribe("update_location", 1, updateLocationCallback);
+    ros::Subscriber update_location_sub = nh.subscribe("MissionControl0/update_location", 1, updateLocationCallback);
 
 
     // same as mission control template, might cause problems
-    ros::Subscriber location_updated_sub = nh.subscribe("location_updated", 1, locationUpdatedCallback);
+    ros::Subscriber location_updated_sub = nh.subscribe("MissionControl0/location_updated", 1, locationUpdatedCallback);
 
     //mission end subscirber
-    ros::Subscriber mission_end_sub = nh.subscribe("mission_end", 1, missionEndCallback);
+    ros::Subscriber mission_end_sub = nh.subscribe("MissionControl0/mission_end", 1, missionEndCallback);
 
 
     //Publishers
@@ -143,7 +140,7 @@ int main(int argc, char** argv)
 
     STATE = Idle;
 
-    ROS_INFO("Going into while loop");
+    ROS_INFO("Drones going into while loop");
 
     while(ros::ok()){
 
@@ -153,7 +150,7 @@ int main(int argc, char** argv)
 
             case Idle:
                 // idle to in swarm
-                //ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
+                ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
                 //ROS_INFO("Drone in swarm? %d", ThisDrone->in_swarm(id));
                 if(update_status_var == 1 && ThisDrone->in_swarm(id)){
                     ROS_INFO("Inside Idle state, Drones should takeoff");
@@ -164,7 +161,7 @@ int main(int argc, char** argv)
 
             case InSwarm:
                 // member election logic
-                ROS_INFO("Inside InSwarm state");
+                ROS_INFO("Drones Inside InSwarm state");
                 if(member_election_var == 1 && ThisDrone->in_swarm(id)){
                     ThisDrone->vote_member(id);
                     nh.getParam("/vote_counter", vote_counter);

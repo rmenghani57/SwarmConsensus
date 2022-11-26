@@ -26,8 +26,6 @@ int main(int argc, char** argv)
 
     init_publisher_subscriber(nh);
 
-    //create local reference frame 
-	//initialize_local_frame();
 
     MissionControl* MissionController = new MissionControl();
 
@@ -82,6 +80,7 @@ int main(int argc, char** argv)
                 break;
                 
             case CheckMembers:
+                ros::Duration(10).sleep(); // sleep for 10 seconds
                 ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
                 ROS_INFO("updating_mission: %d", updating_mission);
@@ -93,7 +92,7 @@ int main(int argc, char** argv)
                 break;
 
             case ElectMembers:
-                ROS_INFO("Mission Control in ElectMembers state");
+                //ROS_INFO("Mission Control in ElectMembers state");  REACHES HERE
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
                     nh.setParam("/updating_mission", false);
