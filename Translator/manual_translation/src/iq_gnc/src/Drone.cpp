@@ -66,8 +66,7 @@ int main(int argc, char** argv)
     Drone* ThisDrone = new Drone(id);
 
     // private node handle
-    ros::NodeHandle nh("~"); 
-    nh = ThisDrone->nh;
+    ros::NodeHandle nh = ThisDrone->nh;
 
     // explanation on this?
     // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
@@ -95,19 +94,6 @@ int main(int argc, char** argv)
 
     //try taking off all drones? in stabilize mode
     //testing
-    //specify some waypoints 
-	std::vector<gnc_api_waypoint> waypointList;
-	gnc_api_waypoint nextWayPoint;
-	nextWayPoint.x = 30;
-	nextWayPoint.y = 30;
-	nextWayPoint.z = 10;
-	nextWayPoint.psi = 0;
-	waypointList.push_back(nextWayPoint);
-	nextWayPoint.x = 60;
-	nextWayPoint.y = 60;
-	nextWayPoint.z = 10;
-	nextWayPoint.psi = 0;
-
     takeoff(10);
     
 
