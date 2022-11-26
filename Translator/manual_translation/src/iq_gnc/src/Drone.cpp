@@ -56,23 +56,26 @@ void missionEndCallback(std_msgs::Int8 mission_end){
 int main(int argc, char** argv)
 {
 
-    // initialize ROS
-    //ros::init(argc, argv, "nh");
-
+    
     // parse the argument passed in launch file to represent current drone id
     int id = atoi(argv[1]);
 
+    // private node handle
+	// initialize ROS
+	ros::init(argc, argv, "drone_node");
+	ros::NodeHandle nh("~");
+	
+    //this->nh = droneNh;
     // instantiate Drone class
-    Drone* ThisDrone = new Drone(id, argc, argv);
-    ros::NodeHandle nh = ThisDrone->nh;
+    Drone* ThisDrone = new Drone(id);
+    
+    //ros::NodeHandle nh = ThisDrone->nh;
 
     // explanation on this?
     // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
     // This function takes our ros node handle as an input and initializes subcribers that will collect the necessary information from our autopilot. 
     // @returns n/a
     init_publisher_subscriber(nh);
-
-    //ROS_INFO("In main, after pub sub init, before wait4connect");
 
     // wait for FCU connection
     //wait4connect();

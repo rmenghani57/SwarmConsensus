@@ -8,20 +8,14 @@ private:
 	int x;
 	int y;
 	int i;
-
-	
+	ros::NodeHandle nh;
 
 public:	
-	ros::NodeHandle nh;
-	Drone(int i, int argc, char** argv)
+	
+	Drone(int i)
 	{
 		// added
 		this->i = i;
-		// private node handle
-		// initialize ROS
-		ros::init(argc, argv, "droneNh");
-		ros::NodeHandle droneNh("~");
-		this->nh = droneNh;
 	}
 	bool is_leader(int id)
 	{
