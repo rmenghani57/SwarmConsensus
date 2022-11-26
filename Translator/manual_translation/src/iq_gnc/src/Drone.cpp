@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     int id = atoi(argv[1]);
 
     // instantiate Drone class
-    Drone* ThisDrone = new Drone(id);
+    Drone* ThisDrone = new Drone(id, argc, argv);
 
     // private node handle
     ros::NodeHandle nh = ThisDrone->nh;
