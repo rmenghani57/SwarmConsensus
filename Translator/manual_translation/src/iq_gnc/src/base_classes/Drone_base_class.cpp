@@ -11,7 +11,7 @@ private:
 	
 
 public:	
-	Drone(int i)
+	Drone(int i, int argc, char** argv)
 	{
 		// added
 		// initialize ROS
