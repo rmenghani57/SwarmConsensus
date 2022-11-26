@@ -76,9 +76,6 @@ int main(int argc, char** argv)
                 int goal;
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
-                ROS_INFO("MissionControl sleeping");
-                ros::Duration(60).sleep(); // sleep for 10 seconds
-                ROS_INFO("MissionControl awake");
                 STATE = CheckMembers;
                 break;
                 
