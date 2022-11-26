@@ -76,14 +76,15 @@ int main(int argc, char** argv)
                 int goal;
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
+                ros::Duration(10).sleep(); // sleep for 10 seconds
                 STATE = CheckMembers;
                 break;
                 
             case CheckMembers:
-                ros::Duration(10).sleep(); // sleep for 10 seconds
-                ROS_INFO("Mission Control in Check Members state");     
+                //ros::Duration(10).sleep(); // sleep for 10 seconds
+                //ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
-                ROS_INFO("updating_mission: %d", updating_mission);
+                //ROS_INFO("updating_mission: %d", updating_mission);
                 if(updating_mission == true){
                     MissionController->possible_member();
                     update_status_pub.publish(sync);
