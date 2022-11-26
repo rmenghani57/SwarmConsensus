@@ -10,13 +10,13 @@ private:
 	int i;
 	
 
-public:
-
-	//added
-	ros::NodeHandle nh;
-	
+public:	
 	Drone(int i)
 	{
+		// added
+		// initialize ROS
+		ros::init(argc, argv, "nh");
+		ros::NodeHandle nh("~");
 		this->i = i;
 	}
 	bool is_leader(int id)

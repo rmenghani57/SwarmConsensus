@@ -57,16 +57,16 @@ int main(int argc, char** argv)
 {
 
     // initialize ROS
-    ros::init(argc, argv, "nh");
+    //ros::init(argc, argv, "nh");
 
     // parse the argument passed in launch file to represent current drone id
     int id = atoi(argv[1]);
 
     // instantiate Drone class
-    Drone ThisDrone = new Drone(id);
+    Drone* ThisDrone = new Drone(id);
 
     // private node handle
-    ros::NodeHandle nh = ThisDrone.nh;
+    ros::NodeHandle nh = ThisDrone->nh;
 
     // explanation on this?
     // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
