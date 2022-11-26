@@ -64,6 +64,7 @@ int main(int argc, char** argv)
 
     // instantiate Drone class
     Drone* ThisDrone = new Drone(id, argc, argv);
+    nh = ThisDrone->nh;
 
     // explanation on this?
     // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
