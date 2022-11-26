@@ -76,7 +76,9 @@ int main(int argc, char** argv)
                 int goal;
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
-                ros::Duration(10).sleep(); // sleep for 10 seconds
+                ROS_INFO("MissionControl sleeping");
+                ros::Duration(60).sleep(); // sleep for 10 seconds
+                ROS_INFO("MissionControl awake");
                 STATE = CheckMembers;
                 break;
                 
@@ -86,6 +88,7 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                 //ROS_INFO("updating_mission: %d", updating_mission);
                 if(updating_mission == true){
+                    ROS_INFO("MissionControl publishing update status");
                     MissionController->possible_member();
                     update_status_pub.publish(sync);
                     STATE = ElectMembers;
