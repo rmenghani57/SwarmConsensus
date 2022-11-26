@@ -64,6 +64,9 @@ int main(int argc, char** argv)
     std_msgs::Int8 sync;
     sync.data = 1;
 
+    ROS_INFO("Mission Control going into while loop");
+
+
     while(ros::ok()){
 
         ros::spinOnce();
@@ -71,6 +74,7 @@ int main(int argc, char** argv)
         switch(STATE){
 
             case Start:
+                ROS_INFO("MissionControl in Start state");
                 int goal;
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
@@ -78,7 +82,7 @@ int main(int argc, char** argv)
                 break;
                 
             case CheckMembers:
-                      
+                ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
                     MissionController->possible_member();
