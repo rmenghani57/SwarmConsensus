@@ -1,50 +1,50 @@
 <launch>
   <rosparam command="load" file="$(find iq_gnc)/global_params/params.yaml"/>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone0" args="0" output="screen"  ns="/Drone0">
-      <param name="namespace" value="/Drone0"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone0" args="0" output="screen"  ns="/drone0">
+      <param name="namespace" value="/drone0"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone1" args="1" output="screen" ns="/Drone1">
-      <param name="namespace" value="/Drone1"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone1" args="1" output="screen" ns="/drone1">
+      <param name="namespace" value="/drone1"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone2" args="2" output="screen" ns="/Drone2">
-      <param name="namespace" value="/Drone2"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone2" args="2" output="screen" ns="/drone2">
+      <param name="namespace" value="/drone2"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone3" args="3" output="screen" ns="/Drone3">
-      <param name="namespace" value="/Drone3"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone3" args="3" output="screen" ns="/drone3">
+      <param name="namespace" value="/drone3"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone4" args="4" output="screen" ns="/Drone4">
-      <param name="namespace" value="/Drone4"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone4" args="4" output="screen" ns="/drone4">
+      <param name="namespace" value="/drone4"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone5" args="5" output="screen" ns="/Drone5">
-      <param name="namespace" value="/Drone5"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone5" args="5" output="screen" ns="/drone5">
+      <param name="namespace" value="/drone5"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone6" args="6" output="screen" ns="/Drone6">
-      <param name="namespace" value="/Drone6"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone6" args="6" output="screen" ns="/drone6">
+      <param name="namespace" value="/drone6"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
   <group>
-    <node pkg="iq_gnc" type="Drone" name="Drone7" args="7" output="screen" ns="/Drone7">
-      <param name="namespace" value="/Drone7"/>
+    <node pkg="iq_gnc" type="Drone" name="Drone7" args="7" output="screen" ns="/drone7">
+      <param name="namespace" value="/drone7"/>
       <param name="use_sim_time" value="true"/>
     </node>
   </group>
