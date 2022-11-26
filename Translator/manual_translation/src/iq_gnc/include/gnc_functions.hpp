@@ -307,16 +307,11 @@ int takeoff(float takeoff_alt)
 	ROS_INFO("Arming drone");
 	mavros_msgs::CommandBool arm_request;
 	arm_request.request.value = true;
-	ROS_INFO("Armed: %d", current_state_g.armed);
-	ROS_INFO("Arm request response: %d", arm_request.response.success);
 	while (!current_state_g.armed && !arm_request.response.success && ros::ok())
 	{
-		ROS_INFO("Inside Arming while loop");
 		ros::Duration(.1).sleep();
 		arming_client.call(arm_request);
-		ROS_INFO("After arming client arm request");
 		local_pos_pub.publish(waypoint_g);
-		ROS_INFO("After local pos pub publish");
 	}
 	if(arm_request.response.success)
 	{

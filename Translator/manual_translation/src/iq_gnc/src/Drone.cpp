@@ -80,8 +80,6 @@ int main(int argc, char** argv)
     // wait for FCU connection
     //wait4connect();
     
-    //ROS_INFO("Next Cmd is Set Guided Mode");
-
     // changing mode to GUIDED 
     //set_mode("GUIDED");
 
@@ -92,10 +90,6 @@ int main(int argc, char** argv)
 
 	//create local reference frame 
 	initialize_local_frame();
-
-    //try taking off all drones? in stabilize mode
-    //testing
-    takeoff(10);
     
 
     //whenever new message in topic update_status, statusCallback func is called
@@ -153,20 +147,20 @@ int main(int argc, char** argv)
 
         ros::spinOnce();
 
-        ROS_INFO("In while ros ok loop");
-
         switch(STATE){
 
             case Idle:
                 // idle to in swarm
                 if(update_status_var == 1 && ThisDrone->in_swarm(id)){
-                    takeoff(3);
+                    ROS_INFO("Inside Idle state, Drones should takeoff");
+                    takeoff(10);
                     STATE = InSwarm;
                 }
                 break;     
 
             case InSwarm:
                 // member election logic
+                ROS_INFO("Inside InSwarm state");
                 if(member_election_var == 1 && ThisDrone->in_swarm(id)){
                     ThisDrone->vote_member(id);
                     nh.getParam("/vote_counter", vote_counter);
