@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 {
 
     // initialize ROS
-    ros::init(argc, argv, "Drone_node");
+    ros::init(argc, argv, "nh");
 
     // parse the argument passed in launch file to represent current drone id
     int id = atoi(argv[1]);

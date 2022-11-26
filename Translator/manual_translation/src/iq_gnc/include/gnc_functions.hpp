@@ -424,7 +424,6 @@ void init_publisher_subscriber(ros::NodeHandle controlnode)
 	std::string ros_namespace;
 	if (!controlnode.hasParam("namespace"))
 	{
-
 		ROS_INFO("using default namespace");
 	}else{
 		controlnode.getParam("namespace", ros_namespace);
