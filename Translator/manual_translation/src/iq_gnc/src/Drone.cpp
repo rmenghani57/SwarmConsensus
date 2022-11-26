@@ -143,6 +143,8 @@ int main(int argc, char** argv)
 
     STATE = Idle;
 
+    ROS_INFO("Going into while loop");
+
     while(ros::ok()){
 
         ros::spinOnce();
@@ -151,6 +153,7 @@ int main(int argc, char** argv)
 
             case Idle:
                 // idle to in swarm
+                ROS_INFO("Inside Idle 1");
                 if(update_status_var == 1 && ThisDrone->in_swarm(id)){
                     ROS_INFO("Inside Idle state, Drones should takeoff");
                     takeoff(10);
