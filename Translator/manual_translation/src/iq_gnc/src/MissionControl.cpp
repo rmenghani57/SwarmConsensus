@@ -84,6 +84,7 @@ int main(int argc, char** argv)
             case CheckMembers:
                 ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
+                ROS_INFO("updating_mission: %d", updating_mission);
                 if(updating_mission == true){
                     MissionController->possible_member();
                     update_status_pub.publish(sync);
@@ -92,7 +93,7 @@ int main(int argc, char** argv)
                 break;
 
             case ElectMembers:
-                     
+                ROS_INFO("Mission Control in ElectMembers state");
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
                     nh.setParam("/updating_mission", false);
