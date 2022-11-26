@@ -11,13 +11,15 @@ private:
 	
 
 public:	
+	ros::NodeHandle nh;
 	Drone(int i, int argc, char** argv)
 	{
 		// added
-		// initialize ROS
-		ros::init(argc, argv, "nh");
-		ros::NodeHandle nh("~");
 		this->i = i;
+		// private node handle
+		// initialize ROS
+		ros::init(argc, argv, "droneNh");
+		nh = ros::NodeHandle droneNh("~");
 	}
 	bool is_leader(int id)
 	{

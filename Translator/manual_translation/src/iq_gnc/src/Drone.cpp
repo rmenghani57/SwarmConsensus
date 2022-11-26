@@ -65,9 +65,6 @@ int main(int argc, char** argv)
     // instantiate Drone class
     Drone* ThisDrone = new Drone(id, argc, argv);
 
-    // private node handle
-    ros::NodeHandle nh = ThisDrone->nh;
-
     // explanation on this?
     // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
     // This function takes our ros node handle as an input and initializes subcribers that will collect the necessary information from our autopilot. 
