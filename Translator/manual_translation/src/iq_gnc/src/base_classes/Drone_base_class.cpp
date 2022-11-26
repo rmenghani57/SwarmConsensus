@@ -8,10 +8,11 @@ private:
 	int x;
 	int y;
 	int i;
-	ros::NodeHandle nh;
+
 	
 
 public:	
+	ros::NodeHandle nh;
 	Drone(int i, int argc, char** argv)
 	{
 		// added
