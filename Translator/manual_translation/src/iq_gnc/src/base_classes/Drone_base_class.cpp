@@ -19,7 +19,8 @@ public:
 		// private node handle
 		// initialize ROS
 		ros::init(argc, argv, "droneNh");
-		this->nh = ros::NodeHandle droneNh("~");
+		ros::NodeHandle droneNh("~");
+		this->nh = droneNh;
 	}
 	bool is_leader(int id)
 	{
