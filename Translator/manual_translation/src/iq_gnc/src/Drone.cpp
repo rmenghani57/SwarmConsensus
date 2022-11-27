@@ -95,26 +95,27 @@ int main(int argc, char** argv)
     //whenever new message in topic update_status, statusCallback func is called
     ros::Subscriber update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
     //whenever new message in topic member_election, statusCallback func is called
-    ros::Subscriber member_election_sub = nh.subscribe((ThisNamespace+"/member_election").c_str(), 1, memberElectionCallback);
+    ros::Subscriber member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
 
-    ros::Subscriber leader_election_sub = nh.subscribe((ThisNamespace+"/leader_election").c_str(), 1, leaderElectionCallback);
+    ros::Subscriber leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
 
     // both pub and sub for this topic in same node, could cause problems
-    ros::Subscriber update_location_sub = nh.subscribe((ThisNamespace+"/update_location").c_str(), 1, updateLocationCallback);
+    ros::Subscriber update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
 
 
     // same as mission control template, might cause problems
-    ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
+    ros::Subscriber location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
 
     //mission end subscirber
-    ros::Subscriber mission_end_sub = nh.subscribe((ThisNamespace+"/mission_end").c_str(), 1, missionEndCallback);
+    ros::Subscriber mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
 
 
     //Publishers
-    ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/location_updated").c_str(), 1);
-
+    //ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/location_updated").c_str(), 1);  
+    ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>("/location_updated", 1, true);  // checking without namespace and adding latch
     // publisher and subscriber in same node (here)
-    ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/update_location").c_str(), 1);
+    //ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/update_location").c_str(), 1);
+    ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>("/update_location", 1, true);
 
     // rate of 1 Hz
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
@@ -185,10 +186,16 @@ int main(int argc, char** argv)
                 // InSwarm to UpdatingLocation state
                 if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false && update_location_var == 1){
                     ThisDrone->move(id);
+                    int x;
+                    int y;
+                    nh.getParam("/drone_location_x", drone_location_x);
+                    nh.getParam("/drone_location_y", drone_location_y);
+                    set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                     STATE = UpdatingLocation;
                 }
                 // InSwarm to Idle transition
                 if(ThisDrone->in_swarm(id) == false && update_status_var == 1){
+                    land();
                     STATE = Idle;
                 }
 
@@ -199,12 +206,18 @@ int main(int argc, char** argv)
                     STATE = InSwarm;
                 }
                 if(mission_end_var == 1){
+                    land();
                     STATE = Idle;
                 }
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
                     update_location_pub.publish(sync);
                     ThisDrone->move(id);
+                    int x;
+                    int y;
+                    nh.getParam("/drone_location_x", drone_location_x);
+                    nh.getParam("/drone_location_y", drone_location_y);
+                    set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                     STATE = WaitingSwarm;
                 }
 

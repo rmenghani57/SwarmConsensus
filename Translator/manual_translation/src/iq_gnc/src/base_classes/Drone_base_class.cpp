@@ -131,6 +131,7 @@ public:
 		      if ((dist > 0) && (dist < 9))
 		      {
 		        drone_time[i] = time_to_swarm[dist - 1];
+				nh.setParam("/drone_time", drone_time);
 		      }
 		    }
 		  }
@@ -150,17 +151,24 @@ public:
 		  {
 		    drone_location_x[id] = drone_location_x[id] + 1;
 		    drone_battery[id] -= 1;
+			nh.setParam("/drone_location_x", drone_location_x);
+			nh.setParam("/drone_battery", drone_battery);
 		  }
 		  else
 		  {
-		    if (drone_location_y[id] != goal_location[1])
-		      drone_location_y[id] = drone_location_y[id] + 1;
-		    drone_battery[id] -= 1;
+		    if (drone_location_y[id] != goal_location[1]){
+		    	drone_location_y[id] = drone_location_y[id] + 1;
+		    	drone_battery[id] -= 1;
+				nh.setParam("/drone_location_y", drone_location_y);
+				nh.setParam("/drone_battery", drone_battery);
+		  	}
 		  }
 		  if (is_leader(id))
 		    update_leader_position(id);
+
 		  x = drone_location_x[id];
 		  y = drone_location_y[id];
+		  
 	}
 	void vote(int id)
 	{
@@ -205,7 +213,7 @@ public:
 		    }
 		  }
 		
-		  return min;
+		return min;
 	}
 	void vote_member(int id)
 	{
