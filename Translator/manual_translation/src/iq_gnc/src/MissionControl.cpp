@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
     // all publishers - each represents a channel in uppaal
     // this node publishes to the update_status topic which is an Uppaal channel (triggered in MissionControl Template)
-    ros::Publisher update_status_pub = nh.advertise<std_msgs::Int8>("update_status", 1);
+    ros::Publisher update_status_pub = nh.advertise<std_msgs::Int8>("MissionControl0/update_status", 1);
     ros::Publisher member_election_pub = nh.advertise<std_msgs::Int8>("member_election", 1);
     ros::Publisher election_pub = nh.advertise<std_msgs::Int8>("leader_election", 1);
     ros::Publisher mission_end_pub = nh.advertise<std_msgs::Int8>("mission_end", 1);
