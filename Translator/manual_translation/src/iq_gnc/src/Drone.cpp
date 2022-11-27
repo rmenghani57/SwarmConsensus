@@ -93,28 +93,28 @@ int main(int argc, char** argv)
     ROS_INFO("THIS NAMESPACE IS: %s", ThisNamespace.c_str());
 
     //whenever new message in topic update_status, statusCallback func is called
-    ros::Subscriber update_status_sub = nh.subscribe((ThisNamespace+"update_status").c_str(), 1, statusCallback);
+    ros::Subscriber update_status_sub = nh.subscribe((ThisNamespace+"/update_status").c_str(), 1, statusCallback);
     //whenever new message in topic member_election, statusCallback func is called
-    ros::Subscriber member_election_sub = nh.subscribe("member_election", 1, memberElectionCallback);
+    ros::Subscriber member_election_sub = nh.subscribe((ThisNamespace+"/member_election").c_str(), 1, memberElectionCallback);
 
-    ros::Subscriber leader_election_sub = nh.subscribe("leader_election", 1, leaderElectionCallback);
+    ros::Subscriber leader_election_sub = nh.subscribe((ThisNamespace+"/leader_election").c_str(), 1, leaderElectionCallback);
 
     // both pub and sub for this topic in same node, could cause problems
-    ros::Subscriber update_location_sub = nh.subscribe("update_location", 1, updateLocationCallback);
+    ros::Subscriber update_location_sub = nh.subscribe((ThisNamespace+"/update_location").c_str(), 1, updateLocationCallback);
 
 
     // same as mission control template, might cause problems
-    ros::Subscriber location_updated_sub = nh.subscribe("location_updated", 1, locationUpdatedCallback);
+    ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
 
     //mission end subscirber
-    ros::Subscriber mission_end_sub = nh.subscribe("mission_end", 1, missionEndCallback);
+    ros::Subscriber mission_end_sub = nh.subscribe((ThisNamespace+"/mission_end").c_str(), 1, missionEndCallback);
 
 
     //Publishers
-    ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>("location_updated", 1);
+    ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/location_updated").c_str(), 1);
 
     // publisher and subscriber in same node (here)
-    ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>("update_location", 1);
+    ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/update_location").c_str(), 1);
 
     // rate of 1 Hz
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.

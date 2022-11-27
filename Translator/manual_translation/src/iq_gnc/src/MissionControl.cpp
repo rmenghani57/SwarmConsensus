@@ -35,13 +35,13 @@ int main(int argc, char** argv)
 
     // all publishers - each represents a channel in uppaal
     // this node publishes to the update_status topic which is an Uppaal channel (triggered in MissionControl Template)
-    ros::Publisher update_status_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"update_status").c_str(), 1);
-    ros::Publisher member_election_pub = nh.advertise<std_msgs::Int8>("member_election", 1);
-    ros::Publisher election_pub = nh.advertise<std_msgs::Int8>("leader_election", 1);
-    ros::Publisher mission_end_pub = nh.advertise<std_msgs::Int8>("mission_end", 1);
+    ros::Publisher update_status_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/update_status").c_str(), 1);
+    ros::Publisher member_election_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/member_election").c_str(), 1);
+    ros::Publisher election_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/leader_election").c_str(), 1);
+    ros::Publisher mission_end_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/mission_end").c_str(), 1);
 
     //subscribers
-    ros::Subscriber location_updated_sub = nh.subscribe("location_updated", 1, locationUpdatedCallback);
+    ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
 
     // rate of 1 Hz  
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
