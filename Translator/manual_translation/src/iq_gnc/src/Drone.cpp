@@ -155,7 +155,7 @@ int main(int argc, char** argv)
 
             case Idle:
                 // idle to in swarm
-                ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
+                //ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
                 //ROS_INFO("Drone in swarm? %d", ThisDrone->in_swarm(id));
                 if(update_status_var == 1 && ThisDrone->in_swarm(id)){
                     ROS_INFO("Inside Idle state, Drones should takeoff");
