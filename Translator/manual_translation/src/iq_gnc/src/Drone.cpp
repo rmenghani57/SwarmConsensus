@@ -93,7 +93,7 @@ int main(int argc, char** argv)
     ROS_INFO("THIS NAMESPACE IS: %s", ThisNamespace.c_str());
 
     //whenever new message in topic update_status, statusCallback func is called
-    ros::Subscriber update_status_sub = nh.subscribe((ThisNamespace+"/update_status").c_str(), 1, statusCallback);
+    ros::Subscriber update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
     //whenever new message in topic member_election, statusCallback func is called
     ros::Subscriber member_election_sub = nh.subscribe((ThisNamespace+"/member_election").c_str(), 1, memberElectionCallback);
 
@@ -150,8 +150,6 @@ int main(int argc, char** argv)
         ros::spinOnce();
 
         switch(STATE){
-
-            ros::spinOnce();
 
             case Idle:
                 // idle to in swarm
