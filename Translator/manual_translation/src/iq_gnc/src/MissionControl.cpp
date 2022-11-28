@@ -43,10 +43,7 @@ int main(int argc, char** argv)
     //subscribers
     ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
 
-    // rate of 1 Hz  
-    //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
-    ros::Rate rate(2.0);
-    // consider increasing freq to 10 Hz
+    
 
 
     // define TA states as enum
@@ -68,7 +65,10 @@ int main(int argc, char** argv)
 
     ROS_INFO("Mission Control going into while loop");
 
-
+    // rate of 1 Hz  
+    //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
+    ros::Rate rate(1.0);
+    // consider increasing freq to 10 Hz
     while(ros::ok()){
 
         //ROS_INFO("ROS IS OK");
@@ -80,11 +80,12 @@ int main(int argc, char** argv)
 
             case Start:
                 ROS_INFO("MissionControl in Start state");
-                int goal;
+                vector<int> goal;
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
                 ROS_INFO("Printing goal location: %d", goal);
                 STATE = CheckMembers;
+                ros::Duration(20).sleep(); // sleep for half a second
                 break;
                 
             case CheckMembers:
@@ -121,7 +122,7 @@ int main(int argc, char** argv)
                 break;     
 
             case LeaderElection:
-                nh.getParam("/vote_counter", vote_counter);
+                nh.getParam("/vote_counter", vote_counter);       // vote counter increasing indefinitely 
                 nh.getParam("/updating_mission", updating_mission);
                 nh.getParam("/Needed", Needed);
 

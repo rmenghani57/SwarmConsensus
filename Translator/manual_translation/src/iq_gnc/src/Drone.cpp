@@ -117,19 +117,17 @@ int main(int argc, char** argv)
     //ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/update_location").c_str(), 1);
     ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>("/update_location", 1, true);
 
-    // rate of 1 Hz
-    //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
-    ros::Rate rate(2.0);
+    
 
     
 
     // local global variable to get and set vote counter variable
     int vote_counter;
 
-    int Needed;
+    int Needed = 3;
     nh.getParam("/Needed", Needed);
 
-    int updating_mission;
+    int updating_mission = true;
 
     //define standard sybc msg
     std_msgs::Int8 sync;
@@ -145,6 +143,10 @@ int main(int argc, char** argv)
     STATE = Idle;
 
     ROS_INFO("Drones going into while loop");
+
+    // rate of 1 Hz
+    //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
+    ros::Rate rate(1.0);
 
     while(ros::ok()){
 
@@ -171,7 +173,7 @@ int main(int argc, char** argv)
                 ROS_INFO("Drones Inside InSwarm case");
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
-                if(member_election_var == 1 && ThisDrone->in_swarm(id)){
+                if(member_election_var == 1 && ThisDrone->in_swarm(id)){   //stuck in a loop here
                     ThisDrone->vote_member(id);
                     nh.getParam("/vote_counter", vote_counter);
                     vote_counter += 1;
