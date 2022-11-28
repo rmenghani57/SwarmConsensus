@@ -208,7 +208,9 @@ public:
 		  nh.setParam("/drone_status", drone_status);
 
 		  voting_in_prog = false;
+		  nh.setParam("/voting_in_prog", voting_in_prog);
 		  updating_mission = true;
+		  nh.setParam("/updating_mission", updating_mission;
 	}
 	void elect_members()
 	{
@@ -255,10 +257,14 @@ public:
 			//added
 			nh.setParam("/drone_status", drone_status);
 		    voting_in_prog = false;
+			nh.setParam("/voting_in_prog", voting_in_prog);
 		  }
 		  updating_mission = true;
+		  nh.setParam("/updating_mission", updating_mission);
 		  candidate_counter = 0;
+		  nh.setParam("/candidate_counter", candidate_counter);
 		  vote_counter = 0;
+		  nh.setParam("/vote_counter", vote_counter);
 		  reset_arrays();
 	}
 };
