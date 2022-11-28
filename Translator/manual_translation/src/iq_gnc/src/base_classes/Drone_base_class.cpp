@@ -182,6 +182,8 @@ public:
 		nh.getParam("/votes", votes);
 		vector<int> drone_status;
 		nh.getParam("/drone_status", drone_status);
+		ROS_INFO("Inside leader election 1");
+
 		  for (int i = 0; i < (N - 1); i++)
 		  {
 		    if ((drone_status[i] == (-1)) && (drone_capability[i] == 1))
@@ -190,7 +192,7 @@ public:
 			  nh.setParam("/votes", votes);
 		    }
 		  }
-		
+		ROS_INFO("Inside leader election 2");
 		  vote_counter++;
 		  nh.setParam("/vote_counter", vote_counter);
 	}

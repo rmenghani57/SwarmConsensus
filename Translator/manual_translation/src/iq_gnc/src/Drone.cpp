@@ -148,6 +148,9 @@ int main(int argc, char** argv)
 
     while(ros::ok()){
 
+
+        ROS_INFO("ROS IS OK");
+
         ros::spinOnce();
 
         switch(STATE){
@@ -166,28 +169,29 @@ int main(int argc, char** argv)
             case InSwarm:
                 // member election logic
                 ROS_INFO("Drones Inside InSwarm case");
+                nh.getParam("/vote_counter", vote_counter);
+                nh.getParam("/updating_mission", updating_mission);
                 if(member_election_var == 1 && ThisDrone->in_swarm(id)){
                     ThisDrone->vote_member(id);
                     nh.getParam("/vote_counter", vote_counter);
                     vote_counter += 1;
                     nh.setParam("/vote_counter", vote_counter); 
                     ROS_INFO("Drones voted for members");
+                    STATE = InSwarm;
                 }
-                //leader election logic
-                if(leader_election_var == 1 && ThisDrone->in_swarm(id)){
+                else if(leader_election_var == 1 && ThisDrone->in_swarm(id)){    //leader election logic
+                    ROS_INFO("Right before leader election");
                     ThisDrone->vote(id);
                     ROS_INFO("Drones voted for leader");
+                    STATE = InSwarm;
                 }
-                nh.getParam("/vote_counter", vote_counter);
-                nh.getParam("/updating_mission", updating_mission);
-                //inSwarm to leader transition
-                if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){
+                else if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){    //inSwarm to leader transition
+                    ROS_INFO("before leader assigned");
                     ThisDrone->update_leader_position(id);
                     STATE = Leader;
                     ROS_INFO("leader assigned");
                 }
-                // InSwarm to UpdatingLocation state
-                if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false && update_location_var == 1){
+                else if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false && update_location_var == 1){   // InSwarm to UpdatingLocation state
                     ROS_INFO("Drone moves 1 unit");
                     ThisDrone->move(id);
                     vector<int> drone_location_x;
@@ -197,25 +201,30 @@ int main(int argc, char** argv)
                     set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                     STATE = UpdatingLocation;
                 }
-                // InSwarm to Idle transition
-                if(ThisDrone->in_swarm(id) == false && update_status_var == 1){
+                else if(ThisDrone->in_swarm(id) == false && update_status_var == 1){    // InSwarm to Idle transition
                     land();
                     STATE = Idle;
                 }
-                
+                else if(mission_end_var == 1){
+                    land();
+                    STATE = Idle;
+                }else{
+                    STATE = InSwarm;
+                }
+        
                 ROS_INFO("breaking from inswarm case now");
                 break;
 
             case Leader:
+                nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->is_leader(id) == false){
                     STATE = InSwarm;
                 }
-                if(mission_end_var == 1){
+                else if(mission_end_var == 1){
                     land();
                     STATE = Idle;
                 }
-                nh.getParam("/updating_mission", updating_mission);
-                if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
+                else if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
                     update_location_pub.publish(sync);
                     ROS_INFO("Leader Drone Moves 1 unit");
                     ThisDrone->move(id);
@@ -225,6 +234,8 @@ int main(int argc, char** argv)
                     nh.getParam("/drone_location_y", drone_location_y);
                     set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                     STATE = WaitingSwarm;
+                }else{
+                    STATE = Leader;
                 }
 
                 break;
@@ -237,29 +248,17 @@ int main(int argc, char** argv)
                 break;  
 
             case WaitingSwarm:
-                nh.getParam("/vote_counter", vote_counter);
-                if(vote_counter == 0){
-                    location_updated_pub.publish(sync);
-                    STATE = InSwarm;
-                }
+                vote_counter = 0;
+                nh.setParam("/vote_counter", vote_counter);
+                location_updated_pub.publish(sync);
+                STATE = InSwarm;    
                 break;
 
         }
 
     }
-    
 
-
-
-
-
-
-
-
-
-
-
-
+    ROS_INFO("ROS IS NOT OKAY");
 
 
 }

@@ -10,7 +10,7 @@ int location_updated_var;
 
 void locationUpdatedCallback(std_msgs::Int8 location_updated){
 
-    ROS_INFO("location_updated = [%d]", location_updated.data);
+    //ROS_INFO("location_updated = [%d]", location_updated.data);
     location_updated_var = location_updated.data;
 
 }
@@ -60,6 +60,7 @@ int main(int argc, char** argv)
     //fixing re declaration errors
     int updating_mission; 
     int vote_counter;       
+    int Needed;
 
     //define standard msg
     std_msgs::Int8 sync;
@@ -69,6 +70,8 @@ int main(int argc, char** argv)
 
 
     while(ros::ok()){
+
+        ROS_INFO("ROS IS OK");
 
         ros::spinOnce();
 
@@ -105,37 +108,36 @@ int main(int argc, char** argv)
                     nh.setParam("/updating_mission", false);
                     member_election_pub.publish(sync);
                 }
-                if(updating_mission == false){
+                else if(updating_mission == false){
                     MissionController->elect_members();
                     STATE = UpdateMembers;
                 }
                 break;
 
             case UpdateMembers:
-                nh.setParam("/updating_mission", true);
+                updating_mission = true;
+                nh.setParam("/updating_mission", updating_mission);
                 update_status_pub.publish(sync);
                 STATE = LeaderElection;
                 break;     
 
             case LeaderElection:
                 nh.getParam("/vote_counter", vote_counter);
-                     
                 nh.getParam("/updating_mission", updating_mission);
+                nh.getParam("/Needed", Needed);
+
                 if(vote_counter == 0 && updating_mission == true){
                     updating_mission = false;
-                    nh.setParam("/updating_mission", false);
+                    nh.setParam("/updating_mission", updating_mission);
                     election_pub.publish(sync);
                 }
-                else{
-                    int Needed;
-                    nh.getParam("/Needed", Needed);
-                    if(vote_counter == Needed){
-                        MissionController->elect_leader();
-                        update_status_pub.publish(sync);
-                        STATE = MissionStarted;
-                    }                      
-
-                }
+                else if(vote_counter == Needed){
+                    MissionController->elect_leader();
+                    update_status_pub.publish(sync);
+                    STATE = MissionStarted;
+                }else{
+                    STATE = LeaderElection;
+                }                      
                 break;
 
             case MissionStarted:
@@ -147,16 +149,16 @@ int main(int argc, char** argv)
                     mission_end_pub.publish(sync);
                     nh.setParam("/updating_mission", 0);   
                     STATE = MissionAccomplished;
+                }            
+                else if(location_updated_var == 1){                  // callback function does not return
+                    nh.setParam("/updating_mission", true);
+                    nh.setParam("/vote_counter", 0);
+                    MissionController->reset_arrays();
+                    STATE = CheckMembers;
+                }else{
+                    STATE = MissionStarted;
                 }
-                else{
-                    // callback function does not return
-                    if(location_updated_var == 1){
-                        nh.setParam("/updating_mission", true);
-                        nh.setParam("/vote_counter", 0);
-                        MissionController->reset_arrays();
-                        STATE = CheckMembers;
-                    }
-                }
+                
                 break;
 
             case MissionAccomplished:
@@ -165,4 +167,7 @@ int main(int argc, char** argv)
 
         }
     }
+
+    ROS_INFO("ROS IS NOT OK");
+
 }
