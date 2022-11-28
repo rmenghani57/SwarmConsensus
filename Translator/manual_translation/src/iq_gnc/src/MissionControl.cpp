@@ -83,7 +83,6 @@ int main(int argc, char** argv)
                 vector<int> goal;
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
-                ROS_INFO("Printing goal location: %d", goal);
                 STATE = CheckMembers;
                 ros::Duration(20).sleep(); // sleep for half a second
                 break;
