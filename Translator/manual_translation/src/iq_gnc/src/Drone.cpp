@@ -186,8 +186,8 @@ int main(int argc, char** argv)
                 // InSwarm to UpdatingLocation state
                 if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false && update_location_var == 1){
                     ThisDrone->move(id);
-                    int drone_location_x;
-                    int drone_location_y;
+                    vector<int> drone_location_x;
+                    vector<int> drone_location_y;
                     nh.getParam("/drone_location_x", drone_location_x);
                     nh.getParam("/drone_location_y", drone_location_y);
                     set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
@@ -213,8 +213,8 @@ int main(int argc, char** argv)
                 if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
                     update_location_pub.publish(sync);
                     ThisDrone->move(id);
-                    int drone_location_x;
-                    int drone_location_y;
+                    vector<int> drone_location_x;
+                    vector<int> drone_location_y;
                     nh.getParam("/drone_location_x", drone_location_x);
                     nh.getParam("/drone_location_y", drone_location_y);
                     set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
