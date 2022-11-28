@@ -148,7 +148,7 @@ int main(int argc, char** argv)
     while(ros::ok()){
 
         ros::spinOnce();
-        rate.sleep();
+        
 
         switch(STATE){
 
@@ -206,7 +206,8 @@ int main(int argc, char** argv)
                     land();
                     STATE = Idle;
                 }else{
-                    STATE = InSwarm;
+                    //STATE = InSwarm;
+                    break;
                 }
         
                 ROS_INFO("breaking from inswarm case now");
@@ -232,7 +233,8 @@ int main(int argc, char** argv)
                     set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                     STATE = WaitingSwarm;
                 }else{
-                    STATE = Leader;
+                    //STATE = Leader;
+                    break;
                 }
 
                 break;
@@ -253,9 +255,10 @@ int main(int argc, char** argv)
 
         }
 
+        rate.sleep();
+
     }
 
     ROS_INFO("ROS IS NOT OKAY");
-
 
 }

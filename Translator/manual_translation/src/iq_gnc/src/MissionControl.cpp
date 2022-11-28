@@ -43,9 +43,6 @@ int main(int argc, char** argv)
     //subscribers
     ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
 
-    
-
-
     // define TA states as enum
     enum STATES 
     {
@@ -77,7 +74,7 @@ int main(int argc, char** argv)
 
         ros::spinOnce();
         //ros::Duration(5).sleep(); // sleep for half a second
-        rate.sleep();
+        
 
         switch(STATE){
 
@@ -106,6 +103,7 @@ int main(int argc, char** argv)
             case ElectMembers:
                 ROS_INFO("Mission Control in ElectMembers state"); 
                 nh.getParam("/updating_mission", updating_mission);
+                ROS_INFO("updating mission should be false %d", updating_mission); 
                 if(updating_mission == true){
                     nh.setParam("/updating_mission", false);
                     member_election_pub.publish(sync);
@@ -114,6 +112,9 @@ int main(int argc, char** argv)
                     MissionController->elect_members();
                     ROS_INFO("Mission Control selected members");
                     STATE = UpdateMembers;
+                }else{
+                    //STATE = ElectMembers;     // does this make sense? or just break
+                    break;
                 }
                 break;
 
@@ -139,7 +140,8 @@ int main(int argc, char** argv)
                     update_status_pub.publish(sync);
                     STATE = MissionStarted;
                 }else{
-                    STATE = LeaderElection;
+                    //STATE = LeaderElection;
+                    break;
                 }                      
                 break;
 
@@ -153,13 +155,14 @@ int main(int argc, char** argv)
                     nh.setParam("/updating_mission", 0);   
                     STATE = MissionAccomplished;
                 }            
-                else if(location_updated_var == 1){                  // callback function does not return
+                else if(location_updated_var == 1){                  
                     nh.setParam("/updating_mission", true);
                     nh.setParam("/vote_counter", 0);
                     MissionController->reset_arrays();
                     STATE = CheckMembers;
                 }else{
-                    STATE = MissionStarted;
+                    //STATE = MissionStarted;
+                    break;
                 }
                 
                 break;
@@ -169,6 +172,9 @@ int main(int argc, char** argv)
                 break;
 
         }
+
+        rate.sleep();
+
     }
 
     ROS_INFO("ROS IS NOT OK");
