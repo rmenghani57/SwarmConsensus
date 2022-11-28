@@ -18,7 +18,7 @@ int location_updated_var;
 
 void locationUpdatedCallback(std_msgs::Int8 location_updated){
 
-    ROS_INFO("location_updated = [%d]", location_updated.data);
+    //ROS_INFO("location_updated = [%d]", location_updated.data);
     location_updated_var = location_updated.data;
 
 }
@@ -26,28 +26,28 @@ void locationUpdatedCallback(std_msgs::Int8 location_updated){
 
 void statusCallback(std_msgs::Int8 update_status){
 
-    ROS_INFO("update_stautus = [%d]", update_status.data);
+    //ROS_INFO("update_stautus = [%d]", update_status.data);
     update_status_var = update_status.data;
 
 }
 
 void memberElectionCallback(std_msgs::Int8 member_election){
-    ROS_INFO("member_election = [%d]", member_election.data);
+    //ROS_INFO("member_election = [%d]", member_election.data);
     member_election_var = member_election.data;
 }
 
 void leaderElectionCallback(std_msgs::Int8 leader_election){
-    ROS_INFO("leader_election = [%d]", leader_election.data);
+    //ROS_INFO("leader_election = [%d]", leader_election.data);
     leader_election_var = leader_election.data;
 }
 
 void updateLocationCallback(std_msgs::Int8 update_location){
-    ROS_INFO("update_location = [%d]", update_location.data);
+    //ROS_INFO("update_location = [%d]", update_location.data);
     update_location_var = update_location.data;
 }
 
 void missionEndCallback(std_msgs::Int8 mission_end){
-    ROS_INFO("update_location = [%d]", mission_end.data);
+    //ROS_INFO("update_location = [%d]", mission_end.data);
     mission_end_var = mission_end.data;
 }
 
@@ -185,6 +185,7 @@ int main(int argc, char** argv)
                 }
                 // InSwarm to UpdatingLocation state
                 if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false && update_location_var == 1){
+                    ROS_INFO("Drone moves 1 unit");
                     ThisDrone->move(id);
                     vector<int> drone_location_x;
                     vector<int> drone_location_y;
@@ -212,6 +213,7 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
                     update_location_pub.publish(sync);
+                    ROS_INFO("Leader Drone Moves 1 unit");
                     ThisDrone->move(id);
                     vector<int> drone_location_x;
                     vector<int> drone_location_y;
@@ -224,6 +226,7 @@ int main(int argc, char** argv)
                 break;
 
             case UpdatingLocation:
+                ROS_INFO("Drone updating location");
                 if(location_updated_var == 1){
                     STATE = InSwarm;
                 }
