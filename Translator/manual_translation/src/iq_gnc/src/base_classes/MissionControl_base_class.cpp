@@ -210,7 +210,7 @@ public:
 		  voting_in_prog = false;
 		  nh.setParam("/voting_in_prog", voting_in_prog);
 		  updating_mission = true;
-		  nh.setParam("/updating_mission", updating_mission;
+		  nh.setParam("/updating_mission", updating_mission);
 	}
 	void elect_members()
 	{
