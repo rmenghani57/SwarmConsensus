@@ -55,9 +55,9 @@ int main(int argc, char** argv)
     STATE = Start;
 
     //fixing re declaration errors
-    int updating_mission; 
-    int vote_counter;       
-    int Needed;
+    int updating_mission = true; 
+    int vote_counter = 0;       
+    int Needed = 3;
     vector<int> goal;
 
     //define standard msg
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
                 STATE = CheckMembers;
-                ros::Duration(20).sleep(); // sleep for half a second
+                ros::Duration(3).sleep(); // sleep for half a second
                 break;
                 
             case CheckMembers:
