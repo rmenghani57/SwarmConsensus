@@ -192,6 +192,7 @@ public:
 		  }
 		
 		  vote_counter++;
+		  nh.setParam("/vote_counter", vote_counter);
 	}
 	int find_min(vector<int> arr, int capability)
 	{

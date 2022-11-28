@@ -165,16 +165,18 @@ int main(int argc, char** argv)
 
             case InSwarm:
                 // member election logic
-                ROS_INFO("Drones Inside InSwarm state");
+                ROS_INFO("Drones Inside InSwarm case");
                 if(member_election_var == 1 && ThisDrone->in_swarm(id)){
                     ThisDrone->vote_member(id);
                     nh.getParam("/vote_counter", vote_counter);
                     vote_counter += 1;
                     nh.setParam("/vote_counter", vote_counter); 
+                    ROS_INFO("Drones voted for members");
                 }
                 //leader election logic
                 if(leader_election_var == 1 && ThisDrone->in_swarm(id)){
                     ThisDrone->vote(id);
+                    ROS_INFO("Drones voted for leader");
                 }
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
@@ -182,6 +184,7 @@ int main(int argc, char** argv)
                 if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){
                     ThisDrone->update_leader_position(id);
                     STATE = Leader;
+                    ROS_INFO("leader assigned");
                 }
                 // InSwarm to UpdatingLocation state
                 if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false && update_location_var == 1){
@@ -199,7 +202,8 @@ int main(int argc, char** argv)
                     land();
                     STATE = Idle;
                 }
-
+                
+                ROS_INFO("breaking from inswarm case now");
                 break;
 
             case Leader:
