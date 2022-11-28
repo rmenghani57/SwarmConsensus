@@ -58,6 +58,7 @@ int main(int argc, char** argv)
     int updating_mission; 
     int vote_counter;       
     int Needed;
+    vector<int> goal;
 
     //define standard msg
     std_msgs::Int8 sync;
@@ -80,7 +81,6 @@ int main(int argc, char** argv)
 
             case Start:
                 ROS_INFO("MissionControl in Start state");
-                vector<int> goal;
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
                 STATE = CheckMembers;
