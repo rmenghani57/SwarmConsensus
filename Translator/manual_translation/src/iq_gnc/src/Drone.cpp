@@ -149,7 +149,7 @@ int main(int argc, char** argv)
     while(ros::ok()){
 
 
-        ROS_INFO("ROS IS OK");
+        //ROS_INFO("ROS IS OK");
 
         ros::spinOnce();
 

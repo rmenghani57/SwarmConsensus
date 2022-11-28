@@ -71,13 +71,12 @@ int main(int argc, char** argv)
 
     while(ros::ok()){
 
-        ROS_INFO("ROS IS OK");
+        //ROS_INFO("ROS IS OK");
 
         ros::spinOnce();
 
         switch(STATE){
 
-            ros::spinOnce();
 
             case Start:
                 ROS_INFO("MissionControl in Start state");
