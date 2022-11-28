@@ -65,6 +65,7 @@ int main(int argc, char** argv)
     sync.data = 1;
 
     ROS_INFO("Mission Control going into while loop");
+    ros::Duration(5).sleep(); // sleep for 5 second
 
     // rate of 1 Hz  
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
@@ -75,6 +76,8 @@ int main(int argc, char** argv)
         //ROS_INFO("ROS IS OK");
 
         ros::spinOnce();
+        //ros::Duration(5).sleep(); // sleep for half a second
+        rate.sleep();
 
         switch(STATE){
 
@@ -84,7 +87,7 @@ int main(int argc, char** argv)
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
                 STATE = CheckMembers;
-                ros::Duration(3).sleep(); // sleep for half a second
+                //ros::Duration(3).sleep(); // sleep for half a second
                 break;
                 
             case CheckMembers:
@@ -101,7 +104,7 @@ int main(int argc, char** argv)
                 break;
 
             case ElectMembers:
-                //ROS_INFO("Mission Control in ElectMembers state");  REACHES HERE
+                ROS_INFO("Mission Control in ElectMembers state"); 
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == true){
                     nh.setParam("/updating_mission", false);
@@ -109,11 +112,12 @@ int main(int argc, char** argv)
                 }
                 else if(updating_mission == false){
                     MissionController->elect_members();
+                    ROS_INFO("Mission Control selected members");
                     STATE = UpdateMembers;
                 }
                 break;
 
-            case UpdateMembers:
+            case UpdateMembers: 
                 updating_mission = true;
                 nh.setParam("/updating_mission", updating_mission);
                 update_status_pub.publish(sync);

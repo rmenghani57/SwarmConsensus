@@ -118,9 +118,6 @@ int main(int argc, char** argv)
     ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>("/update_location", 1, true);
 
     
-
-    
-
     // local global variable to get and set vote counter variable
     int vote_counter;
 
@@ -150,10 +147,8 @@ int main(int argc, char** argv)
 
     while(ros::ok()){
 
-
-        //ROS_INFO("ROS IS OK");
-
         ros::spinOnce();
+        rate.sleep();
 
         switch(STATE){
 
@@ -173,7 +168,7 @@ int main(int argc, char** argv)
                 ROS_INFO("Drones Inside InSwarm case");
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
-                if(member_election_var == 1 && ThisDrone->in_swarm(id)){   //stuck in a loop here
+                if(member_election_var == 1 && ThisDrone->in_swarm(id)){   //stuck in a loop here member election needs to be 0 after first pass
                     ThisDrone->vote_member(id);
                     nh.getParam("/vote_counter", vote_counter);
                     vote_counter += 1;
