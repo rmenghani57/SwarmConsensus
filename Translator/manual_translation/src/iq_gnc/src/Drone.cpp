@@ -92,6 +92,7 @@ int main(int argc, char** argv)
     nh.getParam("namespace", ThisNamespace);
     ROS_INFO("THIS NAMESPACE IS: %s", ThisNamespace.c_str());
 
+    ros::Subscriber update_status_sub;
     
     //whenever new message in topic member_election, statusCallback func is called
     ros::Subscriber member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
@@ -154,7 +155,7 @@ int main(int argc, char** argv)
             case Idle:
             {
                 //whenever new message in topic update_status, statusCallback func is called
-                ros::Subscriber update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
+                update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
                 //ros::Duration(3).sleep();
                 // idle to in swarm
                 ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
@@ -164,6 +165,7 @@ int main(int argc, char** argv)
                     takeoff(10);
                     STATE = InSwarm;
                 }
+                rate.sleep();
                 update_status_sub.shutdown();
                 break;
             }     

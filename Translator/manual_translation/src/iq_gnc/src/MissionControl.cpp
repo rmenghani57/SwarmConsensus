@@ -101,6 +101,7 @@ int main(int argc, char** argv)
                         STATE = ElectMembers;
                     }
                 }
+                rate.sleep();
                 break;
 
             case ElectMembers:
