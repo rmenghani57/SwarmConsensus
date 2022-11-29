@@ -95,7 +95,11 @@ int main(int argc, char** argv)
                 if(updating_mission == true){
                     ROS_INFO("MissionControl publishing update status");
                     MissionController->possible_member();
-                    update_status_pub.publish(sync);
+                    if(update_status_pub.getNumSubscribers() > 0){                              ///ADDED!!!!!!!!!
+                        update_status_pub.publish(sync);
+                    }else{
+                        rate.sleep();
+                    }
                     STATE = ElectMembers;
                 }
                 break;
@@ -106,7 +110,11 @@ int main(int argc, char** argv)
                 ROS_INFO("updating mission should be false %d", updating_mission); 
                 if(updating_mission == true){
                     nh.setParam("/updating_mission", false);
-                    member_election_pub.publish(sync);
+                    if(member_election_pub.getNumSubscribers() > 0){
+                        member_election_pub.publish(sync);
+                    }else{
+                        rate.sleep();
+                    }
                 }
                 else if(updating_mission == false){
                     MissionController->elect_members();
@@ -121,7 +129,11 @@ int main(int argc, char** argv)
             case UpdateMembers: 
                 updating_mission = true;
                 nh.setParam("/updating_mission", updating_mission);
-                update_status_pub.publish(sync);
+                if(update_status_pub.getNumSubscribers() > 0){
+                    update_status_pub.publish(sync);
+                }else{
+                    rate.sleep();
+                }
                 STATE = LeaderElection;
                 break;     
 
@@ -133,11 +145,19 @@ int main(int argc, char** argv)
                 if(vote_counter == 0 && updating_mission == true){
                     updating_mission = false;
                     nh.setParam("/updating_mission", updating_mission);
-                    election_pub.publish(sync);
+                    if(election_pub.getNumSubscribers() > 0){
+                        election_pub.publish(sync);
+                    }{
+                        rate.sleep();
+                    }
                 }
                 else if(vote_counter == Needed){
                     MissionController->elect_leader();
-                    update_status_pub.publish(sync);
+                    if(update_status_pub.getNumSubscribers() > 0){
+                        update_status_pub.publish(sync);
+                    }else{
+                        rate.sleep();
+                    }
                     STATE = MissionStarted;
                 }else{
                     //STATE = LeaderElection;
@@ -151,7 +171,11 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                
                 if(MissionController->swarm_reached_goal()){
-                    mission_end_pub.publish(sync);
+                    if(mission_end_pub.getNumSubscribers() > 0){
+                        mission_end_pub.publish(sync);
+                    }else{
+                        rate.sleep();
+                    }
                     nh.setParam("/updating_mission", 0);   
                     STATE = MissionAccomplished;
                 }            

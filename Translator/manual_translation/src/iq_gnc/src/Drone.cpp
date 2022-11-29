@@ -223,7 +223,11 @@ int main(int argc, char** argv)
                     STATE = Idle;
                 }
                 else if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
-                    update_location_pub.publish(sync);
+                    if(update_location_pub.getNumSubscribers() > 0){
+                        update_location_pub.publish(sync);
+                    }else{
+                        rate.sleep();
+                    }
                     ROS_INFO("Leader Drone Moves 1 unit");
                     ThisDrone->move(id);
                     vector<int> drone_location_x;
@@ -249,7 +253,11 @@ int main(int argc, char** argv)
             case WaitingSwarm:
                 vote_counter = 0;
                 nh.setParam("/vote_counter", vote_counter);
-                location_updated_pub.publish(sync);
+                if(location_updated_pub.getNumSubscribers() > 0){
+                    location_updated_pub.publish(sync);
+                }else{
+                    rate.sleep();
+                }
                 STATE = InSwarm;    
                 break;
 
