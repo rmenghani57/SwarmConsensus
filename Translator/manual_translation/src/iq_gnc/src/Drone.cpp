@@ -92,8 +92,7 @@ int main(int argc, char** argv)
     nh.getParam("namespace", ThisNamespace);
     ROS_INFO("THIS NAMESPACE IS: %s", ThisNamespace.c_str());
 
-    //whenever new message in topic update_status, statusCallback func is called
-    ros::Subscriber update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
+    
     //whenever new message in topic member_election, statusCallback func is called
     ros::Subscriber member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
 
@@ -153,6 +152,9 @@ int main(int argc, char** argv)
         switch(STATE){
 
             case Idle:
+                //whenever new message in topic update_status, statusCallback func is called
+                ros::Subscriber update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
+                ros::Duration(3).sleep();
                 // idle to in swarm
                 //ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
                 //ROS_INFO("Drone in swarm? %d", ThisDrone->in_swarm(id));
@@ -161,6 +163,9 @@ int main(int argc, char** argv)
                     takeoff(10);
                     STATE = InSwarm;
                 }
+
+                update_status_sub.shutdown();
+
                 break;     
 
             case InSwarm:
@@ -174,13 +179,13 @@ int main(int argc, char** argv)
                     vote_counter += 1;
                     nh.setParam("/vote_counter", vote_counter); 
                     ROS_INFO("Drones voted for members");
-                    STATE = InSwarm;
+                    //STATE = InSwarm;
                 }
                 else if(leader_election_var == 1 && ThisDrone->in_swarm(id)){    //leader election logic
                     ROS_INFO("Right before leader election");
                     ThisDrone->vote(id);
                     ROS_INFO("Drones voted for leader");
-                    STATE = InSwarm;
+                    //STATE = InSwarm;
                 }
                 else if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){    //inSwarm to leader transition
                     ROS_INFO("before leader assigned");

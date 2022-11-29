@@ -78,7 +78,6 @@ int main(int argc, char** argv)
 
         switch(STATE){
 
-
             case Start:
                 ROS_INFO("MissionControl in Start state");
                 nh.getParam("/goal", goal);
@@ -93,13 +92,12 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                 //ROS_INFO("updating_mission: %d", updating_mission);
                 if(updating_mission == true){
-                    ROS_INFO("MissionControl publishing update status");
-                    MissionController->possible_member();
-                    if(update_status_pub.getNumSubscribers() > 0){                              ///ADDED!!!!!!!!!
-                        update_status_pub.publish(sync);
-                    }else{
-                        rate.sleep();
+                    
+                    while(update_status_pub.getNumSubscribers() < 1){                              ///ADDED!!!!!!!!!
+                        
                     }
+                    update_status_pub.publish(sync);
+                    MissionController->possible_member();
                     STATE = ElectMembers;
                 }
                 break;
