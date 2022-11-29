@@ -24,12 +24,10 @@ public:
 		  for (int i = 0; i < (N - 1); i++)
 		  {
 		    drone_candidates[i] = 0;
+			nh.setParam("/drone_candidates", drone_candidates);
 		    drone_time[i] = 0;
+			nh.setParam("/drone_time", drone_time);
 		  }
-		
-		// added these two lines to set the parameters after they are updated
-		nh.setParam("/drone_time", drone_time);
-		nh.setParam("/drone_candidates", drone_candidates);
 
 	}
 	bool check_leader_pos()
@@ -152,10 +150,11 @@ public:
 		    {
 		      drone_candidates[i] = 1;    // these need to get set on the parameter server
 		      candidate_counter++;
+			  nh.setParam("/drone_candidates", drone_candidates);
+			  nh.setParam("/candidate_counter", candidate_counter);
 		    }
 		  }
-		nh.setParam("/drone_candidates", drone_candidates);
-		nh.setParam("/candidate_counter", candidate_counter);
+		
 		return candidate_counter;
 	}
 	bool voting_results(vector<int> check_votes)           // modified argument of function
@@ -195,18 +194,14 @@ public:
 		    int cap = mission_capabilities[i];
 		    id_voter = find_drone_in_swarm(cap);
 		    check_votes[i] = votes[id_voter];
+			nh.setParam("/check_votes", check_votes);
 		  }
-		
-		//added
-		nh.setParam("/check_votes", check_votes);
-		
+				
 		  if (voting_results(check_votes) == false)
 		  {
 		    drone_status[votes[id_voter]] = 1;
+			nh.setParam("/drone_status", drone_status);
 		  }
-
-		  nh.setParam("/drone_status", drone_status);
-
 		  voting_in_prog = false;
 		  nh.setParam("/voting_in_prog", voting_in_prog);
 		  updating_mission = true;
@@ -243,19 +238,16 @@ public:
 		      int cap = mission_capabilities[i];
 		      id_voter = find_drone_in_swarm(cap);
 		      check_member_votes[i] = member_votes[id_voter];
-		    }
-
-			//added
-			nh.setParam("/check_member_votes", check_member_votes);
+			  nh.setParam("/check_member_votes", check_member_votes);
+		    }		
 
 		    if (voting_results(check_member_votes) == false)
 		    {
 		      int curr_id = find_drone_in_swarm(drone_capability[member_votes[id_voter]]);
 		      drone_status[curr_id] = 0;
 		      drone_status[member_votes[id_voter]] = -1;
-		    }
-			//added
-			nh.setParam("/drone_status", drone_status);
+			  nh.setParam("/drone_status", drone_status);
+			}			
 		    voting_in_prog = false;
 			nh.setParam("/voting_in_prog", voting_in_prog);
 		  }

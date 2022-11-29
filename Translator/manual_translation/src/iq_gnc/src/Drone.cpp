@@ -155,18 +155,16 @@ int main(int argc, char** argv)
             {
                 //whenever new message in topic update_status, statusCallback func is called
                 ros::Subscriber update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
-                ros::Duration(3).sleep();
+                //ros::Duration(3).sleep();
                 // idle to in swarm
-                //ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
+                ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
                 //ROS_INFO("Drone in swarm? %d", ThisDrone->in_swarm(id));
                 if(update_status_var == 1 && ThisDrone->in_swarm(id)){
                     ROS_INFO("Inside Idle state, Drones should takeoff");
                     takeoff(10);
                     STATE = InSwarm;
                 }
-
                 update_status_sub.shutdown();
-
                 break;
             }     
 

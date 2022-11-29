@@ -93,12 +93,13 @@ int main(int argc, char** argv)
                 //ROS_INFO("updating_mission: %d", updating_mission);
                 if(updating_mission == true){
                     
-                    while(update_status_pub.getNumSubscribers() < 1){                              ///ADDED!!!!!!!!!
-                        
+                    if(update_status_pub.getNumSubscribers() < 1){                              ///ADDED!!!!!!!!!
+                        ROS_INFO("waiting for udpdate status sub");
+                    }else{
+                        update_status_pub.publish(sync);
+                        MissionController->possible_member();
+                        STATE = ElectMembers;
                     }
-                    update_status_pub.publish(sync);
-                    MissionController->possible_member();
-                    STATE = ElectMembers;
                 }
                 break;
 
