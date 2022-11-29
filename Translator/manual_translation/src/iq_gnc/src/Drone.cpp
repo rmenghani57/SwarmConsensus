@@ -152,6 +152,7 @@ int main(int argc, char** argv)
         switch(STATE){
 
             case Idle:
+            {
                 //whenever new message in topic update_status, statusCallback func is called
                 ros::Subscriber update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
                 ros::Duration(3).sleep();
@@ -166,7 +167,8 @@ int main(int argc, char** argv)
 
                 update_status_sub.shutdown();
 
-                break;     
+                break;
+            }     
 
             case InSwarm:
                 // member election logic
