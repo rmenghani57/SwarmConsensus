@@ -122,6 +122,7 @@ int main(int argc, char** argv)
                         member_election_pub.publish(sync);
                     }
                 }
+                nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == false){
                     MissionController->elect_members();
                     ROS_INFO("Mission Control selected members");
@@ -148,8 +149,7 @@ int main(int argc, char** argv)
             {
                 nh.getParam("/vote_counter", vote_counter);       // vote counter increasing indefinitely 
                 nh.getParam("/updating_mission", updating_mission);
-                nh.getParam("/Needed", Needed);
-
+                
                 if(vote_counter == 0 && updating_mission == true){
                     
                     if(election_pub.getNumSubscribers() < 3){
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
                         nh.setParam("/updating_mission", updating_mission);
                     }
                 }
-
+                nh.getParam("/Needed", Needed);
                 if(vote_counter == Needed){
                     
                     if(update_status_pub.getNumSubscribers() < 3){
@@ -199,6 +199,7 @@ int main(int argc, char** argv)
                     MissionController->reset_arrays();
                     STATE = CheckMembers;
                 }
+                location_updated_sub.shutdown();
                 
                 break;
             }
