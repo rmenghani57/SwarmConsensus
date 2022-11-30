@@ -41,7 +41,8 @@ int main(int argc, char** argv)
     ros::Publisher mission_end_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/mission_end").c_str(), 1, true);
 
     //subscribers
-    ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
+    //ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
+    ros::Subscriber location_updated_sub;
 
     // define TA states as enum
     enum STATES 
@@ -79,15 +80,16 @@ int main(int argc, char** argv)
         switch(STATE){
 
             case Start:
+            {
                 ROS_INFO("MissionControl in Start state");
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal);     // do it exactly like uppaal, element by element modify for future 
                 STATE = CheckMembers;
                 //ros::Duration(3).sleep(); // sleep for half a second
                 break;
-                
+            }    
             case CheckMembers:
-                //ros::Duration(10).sleep(); // sleep for 10 seconds
+            {    
                 //ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
                 //ROS_INFO("updating_mission: %d", updating_mission);
@@ -103,93 +105,103 @@ int main(int argc, char** argv)
                 }
                 rate.sleep();
                 break;
+            }
 
             case ElectMembers:
+            {    
                 ROS_INFO("Mission Control in ElectMembers state"); 
                 nh.getParam("/updating_mission", updating_mission);
                 ROS_INFO("updating mission should be false %d", updating_mission); 
+                
                 if(updating_mission == true){
-                    nh.setParam("/updating_mission", false);
-                    if(member_election_pub.getNumSubscribers() > 0){
-                        member_election_pub.publish(sync);
+                    
+                    if(member_election_pub.getNumSubscribers() < 3){
+                        ROS_INFO("waiting for updating mission sub elect members state");
                     }else{
-                        rate.sleep();
+                        nh.setParam("/updating_mission", false);
+                        member_election_pub.publish(sync);
                     }
                 }
-                else if(updating_mission == false){
+                if(updating_mission == false){
                     MissionController->elect_members();
                     ROS_INFO("Mission Control selected members");
                     STATE = UpdateMembers;
-                }else{
-                    //STATE = ElectMembers;     // does this make sense? or just break
-                    break;
                 }
+
                 break;
+            }
 
             case UpdateMembers: 
-                updating_mission = true;
-                nh.setParam("/updating_mission", updating_mission);
-                if(update_status_pub.getNumSubscribers() > 0){
-                    update_status_pub.publish(sync);
+            {
+                if(update_status_pub.getNumSubscribers() < 3){
+                    ROS_INFO("waiting for upate status sub update members");
                 }else{
-                    rate.sleep();
+                    update_status_pub.publish(sync);
+                    updating_mission = true;
+                    nh.setParam("/updating_mission", updating_mission);
                 }
                 STATE = LeaderElection;
                 break;     
+            }
 
             case LeaderElection:
+            {
                 nh.getParam("/vote_counter", vote_counter);       // vote counter increasing indefinitely 
                 nh.getParam("/updating_mission", updating_mission);
                 nh.getParam("/Needed", Needed);
 
                 if(vote_counter == 0 && updating_mission == true){
-                    updating_mission = false;
-                    nh.setParam("/updating_mission", updating_mission);
-                    if(election_pub.getNumSubscribers() > 0){
+                    
+                    if(election_pub.getNumSubscribers() < 3){
+                        ROS_INFO("waiting for election subs leader election state");
+                    }else{
                         election_pub.publish(sync);
-                    }{
-                        rate.sleep();
+                        updating_mission = false;
+                        nh.setParam("/updating_mission", updating_mission);
                     }
                 }
-                else if(vote_counter == Needed){
-                    MissionController->elect_leader();
-                    if(update_status_pub.getNumSubscribers() > 0){
-                        update_status_pub.publish(sync);
+
+                if(vote_counter == Needed){
+                    
+                    if(update_status_pub.getNumSubscribers() < 3){
+                        ROS_INFO("waiting for update status subs leader election state");
                     }else{
-                        rate.sleep();
+                        update_status_pub.publish(sync);
+                        MissionController->elect_leader();
+                        STATE = MissionStarted;
                     }
-                    STATE = MissionStarted;
-                }else{
-                    //STATE = LeaderElection;
-                    break;
-                }                      
+                    
+                }
+
                 break;
+            }
 
             case MissionStarted:
-            
+            {
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
                
                 if(MissionController->swarm_reached_goal()){
-                    if(mission_end_pub.getNumSubscribers() > 0){
-                        mission_end_pub.publish(sync);
+                    if(mission_end_pub.getNumSubscribers() < 3){
+                        ROS_INFO("waiting for mission end subs mission started state");
                     }else{
-                        rate.sleep();
+                        mission_end_pub.publish(sync);
+                        nh.setParam("/updating_mission", 0);   
+                        STATE = MissionAccomplished;
                     }
-                    nh.setParam("/updating_mission", 0);   
-                    STATE = MissionAccomplished;
+                    
                 }            
-                else if(location_updated_var == 1){                  
+                
+                location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
+                if(location_updated_var == 1){                  
                     nh.setParam("/updating_mission", true);
                     nh.setParam("/vote_counter", 0);
                     MissionController->reset_arrays();
                     STATE = CheckMembers;
-                }else{
-                    //STATE = MissionStarted;
-                    break;
                 }
                 
                 break;
+            }
 
             case MissionAccomplished:
             

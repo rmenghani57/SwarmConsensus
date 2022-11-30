@@ -95,20 +95,23 @@ int main(int argc, char** argv)
     ros::Subscriber update_status_sub;
     
     //whenever new message in topic member_election, statusCallback func is called
-    ros::Subscriber member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
+    //ros::Subscriber member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
+    ros::Subscriber member_election_sub;
 
-    ros::Subscriber leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
+    //ros::Subscriber leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
+    ros::Subscriber leader_election_sub;
 
     // both pub and sub for this topic in same node, could cause problems
-    ros::Subscriber update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
-
+    //ros::Subscriber update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
+    ros::Subscriber update_location_sub;
 
     // same as mission control template, might cause problems
-    ros::Subscriber location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
+    //ros::Subscriber location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
+    ros::Subscriber location_updated_sub
 
     //mission end subscirber
-    ros::Subscriber mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
-
+    //ros::Subscriber mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
+    ros::Subscriber mission_end_sub
 
     //Publishers
     //ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/location_updated").c_str(), 1);  
@@ -170,114 +173,137 @@ int main(int argc, char** argv)
                     }
                 }
                 //rate.sleep();
-                
                 break;
             }     
 
             case InSwarm:
+            {
                 // member election logic
                 ROS_INFO("Drones Inside InSwarm case");
+                
+                if(ThisDrone->in_swarm(id)){   
+                    
+                    member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
+                    
+                    if(member_election_var == 1){    
+                        ThisDrone->vote_member(id);
+                        nh.getParam("/vote_counter", vote_counter);
+                        vote_counter += 1;
+                        nh.setParam("/vote_counter", vote_counter); 
+                        ROS_INFO("Drones voted for members");
+                        //STATE = InSwarm;
+                    }
+                }
+
+                if(ThisDrone->in_swarm(id)){    //leader election logic, not sure if problems due to same guard condition maybe join w above
+                    leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
+                    if(leader_election_var == 1){    
+                        ROS_INFO("Right before leader election");
+                        ThisDrone->vote(id);
+                        ROS_INFO("Drones voted for leader");
+                        //STATE = InSwarm;
+                    }
+                }
+
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
-                if(member_election_var == 1 && ThisDrone->in_swarm(id)){   //stuck in a loop here member election needs to be 0 after first pass
-                    ThisDrone->vote_member(id);
-                    nh.getParam("/vote_counter", vote_counter);
-                    vote_counter += 1;
-                    nh.setParam("/vote_counter", vote_counter); 
-                    ROS_INFO("Drones voted for members");
-                    //STATE = InSwarm;
-                }
-                else if(leader_election_var == 1 && ThisDrone->in_swarm(id)){    //leader election logic
-                    ROS_INFO("Right before leader election");
-                    ThisDrone->vote(id);
-                    ROS_INFO("Drones voted for leader");
-                    //STATE = InSwarm;
-                }
-                else if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){    //inSwarm to leader transition
+                if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){    //inSwarm to leader transition
                     ROS_INFO("before leader assigned");
                     ThisDrone->update_leader_position(id);
                     STATE = Leader;
                     ROS_INFO("leader assigned");
                 }
-                else if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false && update_location_var == 1){   // InSwarm to UpdatingLocation state
-                    ROS_INFO("Drone moves 1 unit");
-                    ThisDrone->move(id);
-                    vector<int> drone_location_x;
-                    vector<int> drone_location_y;
-                    nh.getParam("/drone_location_x", drone_location_x);
-                    nh.getParam("/drone_location_y", drone_location_y);
-                    set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
-                    STATE = UpdatingLocation;
+
+                if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false){   // InSwarm to UpdatingLocation state
+                    update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
+                    if(update_location_var == 1){    
+                        ROS_INFO("Drone moves 1 unit");
+                        ThisDrone->move(id);
+                        vector<int> drone_location_x;
+                        vector<int> drone_location_y;
+                        nh.getParam("/drone_location_x", drone_location_x);
+                        nh.getParam("/drone_location_y", drone_location_y);
+                        set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
+                        STATE = UpdatingLocation;
+                    }   
                 }
-                else if(ThisDrone->in_swarm(id) == false && update_status_var == 1){    // InSwarm to Idle transition
+                
+                if(ThisDrone->in_swarm(id) == false){    // InSwarm to Idle transition
+                    update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
+                    if(update_status_var == 1){
+                        land();
+                        STATE = Idle;
+                    }
+                }
+
+                mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
+                if(mission_end_var == 1){
                     land();
                     STATE = Idle;
                 }
-                else if(mission_end_var == 1){
-                    land();
-                    STATE = Idle;
-                }else{
-                    //STATE = InSwarm;
-                    break;
-                }
-        
+
                 ROS_INFO("breaking from inswarm case now");
                 break;
+            }
 
             case Leader:
+            {    
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->is_leader(id) == false){
                     STATE = InSwarm;
                 }
-                else if(mission_end_var == 1){
+                ros::Subscriber mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
+                if(mission_end_var == 1){
                     land();
                     STATE = Idle;
                 }
-                else if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
-                    if(update_location_pub.getNumSubscribers() > 0){
-                        update_location_pub.publish(sync);
+                if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
+                    if(update_location_pub.getNumSubscribers() < 2){
+                        ROS_INFO("waiting for mission control update location sub");
                     }else{
-                        rate.sleep();
+                        update_location_pub.publish(sync);
+                        ROS_INFO("Leader Drone Moves 1 unit");
+                        ThisDrone->move(id);
+                        vector<int> drone_location_x;
+                        vector<int> drone_location_y;
+                        nh.getParam("/drone_location_x", drone_location_x);
+                        nh.getParam("/drone_location_y", drone_location_y);
+                        set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
+                        STATE = WaitingSwarm;
                     }
-                    ROS_INFO("Leader Drone Moves 1 unit");
-                    ThisDrone->move(id);
-                    vector<int> drone_location_x;
-                    vector<int> drone_location_y;
-                    nh.getParam("/drone_location_x", drone_location_x);
-                    nh.getParam("/drone_location_y", drone_location_y);
-                    set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
-                    STATE = WaitingSwarm;
-                }else{
-                    //STATE = Leader;
-                    break;
+                    
                 }
-
+                rate.sleep();
                 break;
+            }
 
             case UpdatingLocation:
+            {
                 ROS_INFO("Drone updating location");
+                location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
                 if(location_updated_var == 1){
                     STATE = InSwarm;
                 }
                 break;  
+            }
 
             case WaitingSwarm:
-                vote_counter = 0;
-                nh.setParam("/vote_counter", vote_counter);
-                if(location_updated_pub.getNumSubscribers() > 0){
-                    location_updated_pub.publish(sync);
+            {
+                if(location_updated_pub.getNumSubscribers() < 2){
+                    ROS_INFO("waiting for mission control location updated sub");
                 }else{
-                    rate.sleep();
+                    
+                    location_updated_pub.publish(sync);
+                    vote_counter = 0;
+                    nh.setParam("/vote_counter", vote_counter);
+                    STATE = InSwarm;
+
                 }
-                STATE = InSwarm;    
+                rate.sleep();
                 break;
-
+            }
         }
-
         rate.sleep();
-
     }
-
     ROS_INFO("ROS IS NOT OKAY");
-
 }
