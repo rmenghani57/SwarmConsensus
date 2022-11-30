@@ -124,10 +124,9 @@ int main(int argc, char** argv)
     // local global variable to get and set vote counter variable
     int vote_counter;
 
-    int Needed = 3;
-    nh.getParam("/Needed", Needed);
+    int Needed;
 
-    int updating_mission = true;
+    int updating_mission;
 
     //define standard sybc msg
     std_msgs::Int8 sync;

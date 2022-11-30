@@ -53,9 +53,9 @@ int main(int argc, char** argv)
     STATE = Start;
 
     //fixing re declaration errors
-    int updating_mission = true; 
-    int vote_counter = 0;       
-    int Needed = 3;
+    int updating_mission; 
+    int vote_counter;       
+    int Needed;
     vector<int> goal;
 
     //define standard msg
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
             }    
             case CheckMembers:
             {    
-                //ROS_INFO("Mission Control in Check Members state");     
+                ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
                 //ROS_INFO("updating_mission: %d", updating_mission);
                 if(updating_mission == true){
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
                     }
                     //else{
                         ROS_INFO("Setting updating mission false");
-                        nh.setParam("/updating_mission", false);
+                        nh.setParam("/updating_mission", 0);
                         ROS_INFO("updating mission should be false %d", updating_mission);
                         member_election_pub.publish(sync);
                     //}
