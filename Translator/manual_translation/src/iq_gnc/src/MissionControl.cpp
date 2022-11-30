@@ -95,15 +95,16 @@ int main(int argc, char** argv)
                 //ROS_INFO("updating_mission: %d", updating_mission);
                 if(updating_mission == true){
                     
-                    if(update_status_pub.getNumSubscribers() < 3){                         
+                    while(update_status_pub.getNumSubscribers() < 3){                         
                         ROS_INFO("waiting for udpdate status sub");
-                    }else{
+                    }
+                    //else{
                         update_status_pub.publish(sync);
                         MissionController->possible_member();
                         STATE = ElectMembers;
-                    }
+                    //}
                 }
-                rate.sleep();
+                //rate.sleep();
                 break;
             }
 
@@ -115,12 +116,13 @@ int main(int argc, char** argv)
                 
                 if(updating_mission == true){
                     
-                    if(member_election_pub.getNumSubscribers() < 3){
+                    while(member_election_pub.getNumSubscribers() < 3){
                         ROS_INFO("waiting for updating mission sub elect members state");
-                    }else{
+                    }
+                    //else{
                         nh.setParam("/updating_mission", false);
                         member_election_pub.publish(sync);
-                    }
+                    //}
                 }
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == false){
