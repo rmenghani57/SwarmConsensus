@@ -21,7 +21,7 @@ public:
 		nh.getParam("/N", N);
 		vector<int> drone_candidates;
 		nh.getParam("/drone_candidates", drone_candidates);
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int i = 0; i <= (N - 1); i++)
 		  {
 		    drone_candidates[i] = 0;
 			nh.setParam("/drone_candidates", drone_candidates);
@@ -56,7 +56,7 @@ public:
 		nh.getParam("/N", N);
 		vector<int> drone_status;
 		nh.getParam("/drone_status", drone_status);
-		  for (int id = 0; id < (N - 1); id++)
+		  for (int id = 0; id <= (N - 1); id++)
 		  {
 		    if ((drone_status[id] != 0) && (drone_capability[id] == capability))
 		    {
@@ -77,7 +77,7 @@ public:
 		vector<int> drone_location_x;
 		nh.getParam("/drone_location_x", drone_location_x);
 		  bool reached = true;
-		  for (int id = 0; id < (N - 1); id++)
+		  for (int id = 0; id <= (N - 1); id++)
 		  {
 		    if (in_swarm(id))
 		    {
@@ -118,7 +118,7 @@ public:
 	{
 		vector<int> mission_capabilities;
 		nh.getParam("/mission_capabilities", mission_capabilities);
-		  for (int i = 0; i < 2; i++)
+		  for (int i = 0; i <= 2; i++)
 		  {
 		    if (mission_capabilities[i] == capability)
 		      return true;
@@ -144,7 +144,7 @@ public:
 		nh.getParam("/candidate_counter", candidate_counter);
 		vector<int> drone_candidates;
 		nh.getParam("/drone_candidates", drone_candidates);
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int i = 0; i <= (N - 1); i++)
 		  {
 		    if ((((drone_status[i] == 0) && (drone_battery[i] > 49)) && within_reach(drone_location_x[i], drone_location_y[i])) && is_capabilities_needed(drone_capability[i]))
 		    {
@@ -163,7 +163,7 @@ public:
 		nh.getParam("/Needed", Needed);
 		//vector<int> check_votes;
 		//nh.getParam("/check_votes", check_votes);
-		  for (int i = 0; i < (Needed - 2); i++)
+		  for (int i = 0; i <= (Needed - 2); i++)
 		  {
 		    if (check_votes[i] != check_votes[i + 1])
 		      return true;
@@ -189,7 +189,7 @@ public:
 		nh.getParam("/check_votes", check_votes);
 		int id_voter;
 		nh.getParam("/id_voter", id_voter);
-		  for (int i = 0; i < (Needed - 1); i++)
+		  for (int i = 0; i <= (Needed - 1); i++)
 		  {
 		    int cap = mission_capabilities[i];
 		    id_voter = find_drone_in_swarm(cap);
@@ -233,7 +233,7 @@ public:
 		nh.getParam("/updating_mission", updating_mission);
 		  if (vote_counter == Needed)
 		  {
-		    for (int i = 0; i < (Needed - 1); i++)
+		    for (int i = 0; i <= (Needed - 1); i++)
 		    {
 		      int cap = mission_capabilities[i];
 		      id_voter = find_drone_in_swarm(cap);

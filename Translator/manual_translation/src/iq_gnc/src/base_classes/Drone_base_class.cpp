@@ -37,7 +37,7 @@ public:
 		nh.getParam("/N", N);
 		vector<int> drone_status;
 		nh.getParam("/drone_status", drone_status);
-		  for (int id = 0; id < (N - 1); id++)
+		  for (int id = 0; id <= (N - 1); id++)
 		  {
 		    if ((drone_status[id] != 0) && (drone_capability[id] == capability))
 		    {
@@ -58,7 +58,7 @@ public:
 		vector<int> drone_location_x;
 		nh.getParam("/drone_location_x", drone_location_x);
 		  bool reached = true;
-		  for (int id = 0; id < (N - 1); id++)
+		  for (int id = 0; id <= (N - 1); id++)
 		  {
 		    if (in_swarm(id))
 		    {
@@ -123,7 +123,7 @@ public:
 		nh.getParam("/time_to_swarm", time_to_swarm);
 		vector<int> drone_candidates;
 		nh.getParam("/drone_candidates", drone_candidates);
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int i = 0; i <= (N - 1); i++)
 		  {
 		    if ((drone_candidates[i] == 1) && (drone_capability[i] == cap))
 		    {
@@ -184,7 +184,7 @@ public:
 		nh.getParam("/drone_status", drone_status);
 		ROS_INFO("Inside leader election 1");
 
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int i = 0; i <= (N - 1); i++)
 		  {
 		    if ((drone_status[i] == (-1)) && (drone_capability[i] == 1))
 		    {
@@ -205,7 +205,7 @@ public:
 		vector<int> drone_candidates;
 		nh.getParam("/drone_candidates", drone_candidates);
 		  int min = 100;
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int i = 0; i <= (N - 1); i++)
 		  {
 		    if ((drone_capability[i] == capability) && (drone_candidates[i] == 1))
 		    {
@@ -234,7 +234,7 @@ public:
 		nh.getParam("/drone_battery", drone_battery);
 		vector<int> drone_candidates;
 		nh.getParam("/drone_candidates", drone_candidates);
-		  for (int i = 0; i < (N - 1); i++)
+		  for (int i = 0; i <= (N - 1); i++)
 		  {
 		    if (drone_candidates[i] == 1)
 		    {
