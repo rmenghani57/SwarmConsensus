@@ -176,10 +176,10 @@ int main(int argc, char** argv)
                 // leaderelection to missionstarted transition
                 nh.getParam("/Needed", Needed);
                 if(vote_counter == Needed){
-                    
-                    while(update_status_pub.getNumSubscribers() < 3){
-                        ROS_INFO("waiting for update status subs leader election state");
-                    }
+                    ROS_INFO("waiting for update status subs leader election state");
+                    //while(update_status_pub.getNumSubscribers() < 3){
+                        
+                    //}
                     //else{
                         update_status_pub.publish(sync);
                         MissionController->elect_leader();
