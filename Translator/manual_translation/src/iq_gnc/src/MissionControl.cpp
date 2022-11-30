@@ -198,8 +198,8 @@ int main(int argc, char** argv)
                     nh.setParam("/vote_counter", 0);
                     MissionController->reset_arrays();
                     STATE = CheckMembers;
+                    location_updated_sub.shutdown();
                 }
-                location_updated_sub.shutdown();
                 
                 break;
             }
