@@ -171,8 +171,9 @@ int main(int argc, char** argv)
                         STATE = InSwarm;
                         
                     }
+                    update_status_sub.shutdown();
                 }
-                update_status_sub.shutdown();
+                
                 break;
             }     
 
