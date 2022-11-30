@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     sync.data = 1;
 
     ROS_INFO("Mission Control going into while loop");
-    ros::Duration(5).sleep(); // sleep for 5 second
+    ros::Duration(3).sleep(); // sleep for 5 second
 
     // rate of 1 Hz  
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
             {    
                 ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
-                //ROS_INFO("updating_mission: %d", updating_mission);
+                
                 if(updating_mission == true){
                     
                     while(update_status_pub.getNumSubscribers() < 3){                         
@@ -127,6 +127,7 @@ int main(int argc, char** argv)
                     //else{
                         ROS_INFO("Setting updating mission false");
                         nh.setParam("/updating_mission", 0);
+                        ros::Duration(0.5).sleep();   // trying to sleep and see if the param changes
                         ROS_INFO("updating mission should be false %d", updating_mission);
                         member_election_pub.publish(sync);
                     //}
@@ -137,42 +138,45 @@ int main(int argc, char** argv)
 
             case UpdateMembers: 
             {
-                if(update_status_pub.getNumSubscribers() < 3){
+                while(update_status_pub.getNumSubscribers() < 3){
                     ROS_INFO("waiting for upate status sub update members");
-                }else{
-                    update_status_pub.publish(sync);
-                    updating_mission = true;
-                    nh.setParam("/updating_mission", updating_mission);
                 }
+                //else{
+                    update_status_pub.publish(sync);
+                    updating_mission = 1;
+                    nh.setParam("/updating_mission", updating_mission);
+                //}
                 STATE = LeaderElection;
                 break;     
             }
 
             case LeaderElection:
             {
-                nh.getParam("/vote_counter", vote_counter);       // vote counter increasing indefinitely 
+                nh.getParam("/vote_counter", vote_counter);       // GOT HERE 
                 nh.getParam("/updating_mission", updating_mission);
                 
-                if(vote_counter == 0 && updating_mission == true){
+                if(vote_counter == 0 && updating_mission == 1){
                     
-                    if(election_pub.getNumSubscribers() < 3){
+                    while(election_pub.getNumSubscribers() < 3){
                         ROS_INFO("waiting for election subs leader election state");
-                    }else{
-                        election_pub.publish(sync);
-                        updating_mission = false;
-                        nh.setParam("/updating_mission", updating_mission);
                     }
+                    //else{
+                        election_pub.publish(sync);
+                        updating_mission = 1;
+                        nh.setParam("/updating_mission", updating_mission);
+                    //}
                 }
                 nh.getParam("/Needed", Needed);
                 if(vote_counter == Needed){
                     
-                    if(update_status_pub.getNumSubscribers() < 3){
+                    while(update_status_pub.getNumSubscribers() < 3){
                         ROS_INFO("waiting for update status subs leader election state");
-                    }else{
+                    }
+                    //else{
                         update_status_pub.publish(sync);
                         MissionController->elect_leader();
                         STATE = MissionStarted;
-                    }
+                    //}
                     
                 }
 
@@ -185,13 +189,14 @@ int main(int argc, char** argv)
                 nh.getParam("/updating_mission", updating_mission);
                
                 if(MissionController->swarm_reached_goal()){
-                    if(mission_end_pub.getNumSubscribers() < 3){
+                    while(mission_end_pub.getNumSubscribers() < 3){
                         ROS_INFO("waiting for mission end subs mission started state");
-                    }else{
+                    }
+                    //else{
                         mission_end_pub.publish(sync);
                         nh.setParam("/updating_mission", 0);   
                         STATE = MissionAccomplished;
-                    }
+                    //}
                     
                 }            
                 

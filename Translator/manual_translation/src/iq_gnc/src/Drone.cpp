@@ -272,9 +272,10 @@ int main(int argc, char** argv)
                 
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
-                    if(update_location_pub.getNumSubscribers() < 2){
+                    while(update_location_pub.getNumSubscribers() < 2){
                         ROS_INFO("waiting for mission control update location sub");
-                    }else{
+                    }
+                    //else{
                         update_location_pub.publish(sync);
                         ROS_INFO("Leader Drone Moves 1 unit");
                         ThisDrone->move(id);
@@ -284,10 +285,10 @@ int main(int argc, char** argv)
                         nh.getParam("/drone_location_y", drone_location_y);
                         set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                         STATE = WaitingSwarm;
-                    }
+                    //}
                     
                 }
-                rate.sleep();
+                //rate.sleep();
                 break;
             }
 
@@ -306,17 +307,18 @@ int main(int argc, char** argv)
             case WaitingSwarm:
             {
                 
-                if(location_updated_pub.getNumSubscribers() < 2){
+                while(location_updated_pub.getNumSubscribers() < 2){
                     ROS_INFO("waiting for mission control location updated sub");
-                }else{
+                }
+                //else{
                     
                     location_updated_pub.publish(sync);
                     vote_counter = 0;
                     nh.setParam("/vote_counter", vote_counter);
                     STATE = InSwarm;
 
-                }
-                rate.sleep();
+                //}
+                //rate.sleep();
                 break;
             }
         }
