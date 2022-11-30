@@ -141,10 +141,10 @@ int main(int argc, char** argv)
             case UpdateMembers: 
             {
                 // updatemembers to leader election transition
-                ROS_INFO("waiting for upate status sub update members");  // GOT HERE
-                while(update_status_pub.getNumSubscribers() < 1){
+                //ROS_INFO("waiting for upate status sub update members");  // GOT HERE
+                //while(update_status_pub.getNumSubscribers() < 1){
                      
-                }
+                //}
                 //else{
                     update_status_pub.publish(sync);
                     updating_mission = 1;
