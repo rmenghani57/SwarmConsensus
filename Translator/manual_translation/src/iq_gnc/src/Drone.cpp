@@ -181,8 +181,8 @@ int main(int argc, char** argv)
             {
                 // member election logic
                 ROS_INFO("Drones Inside InSwarm case");
-                
-                if(ThisDrone->in_swarm(id)){   
+                nh.getParam("/vote_counter", vote_counter);
+                if(ThisDrone->in_swarm(id) && vote_counter < 3){   //added vote counter guard here 
                     
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
                     
@@ -198,7 +198,8 @@ int main(int argc, char** argv)
                     
                 }
 
-                if(ThisDrone->in_swarm(id)){    //leader election logic, not sure if problems due to same guard condition maybe join w above
+                nh.getParam("/vote_counter", vote_counter);
+                if(ThisDrone->in_swarm(id) && vote_counter < 3){    //added vote counter guard here
                     leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
                     if(leader_election_var == 1){    
                         ROS_INFO("Right before leader election");
