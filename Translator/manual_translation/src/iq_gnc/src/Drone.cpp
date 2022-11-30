@@ -107,11 +107,11 @@ int main(int argc, char** argv)
 
     // same as mission control template, might cause problems
     //ros::Subscriber location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
-    ros::Subscriber location_updated_sub
+    ros::Subscriber location_updated_sub;
 
     //mission end subscirber
     //ros::Subscriber mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
-    ros::Subscriber mission_end_sub
+    ros::Subscriber mission_end_sub;
 
     //Publishers
     //ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/location_updated").c_str(), 1);  
@@ -289,6 +289,7 @@ int main(int argc, char** argv)
 
             case WaitingSwarm:
             {
+                
                 if(location_updated_pub.getNumSubscribers() < 2){
                     ROS_INFO("waiting for mission control location updated sub");
                 }else{
