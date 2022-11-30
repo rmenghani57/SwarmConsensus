@@ -166,10 +166,11 @@ int main(int argc, char** argv)
                         ROS_INFO("Inside Idle state, Drones should takeoff");
                         takeoff(10);
                         STATE = InSwarm;
+                        update_status_sub.shutdown();
                     }
                 }
                 //rate.sleep();
-                update_status_sub.shutdown();
+                
                 break;
             }     
 
