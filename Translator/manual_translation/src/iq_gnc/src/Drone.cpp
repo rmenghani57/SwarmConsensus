@@ -156,14 +156,12 @@ int main(int argc, char** argv)
 
             case Idle:
             {
-                //ros::Duration(3).sleep();
+                
                 // idle to in swarm
                 if(ThisDrone->in_swarm(id)){
-                    //whenever new message in topic update_status, statusCallback func is called
-                    update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
                     
-                    ROS_INFO("Inside Idle 1, update_status_var: %d", update_status_var);
-                    //ROS_INFO("Drone in swarm? %d", ThisDrone->in_swarm(id));
+                    update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
+                                        
                     if(update_status_var == 1){
                         ROS_INFO("Inside Idle state, Drones should takeoff");
                         takeoff(10);
@@ -179,7 +177,7 @@ int main(int argc, char** argv)
             case InSwarm:
             {
                 // member election logic
-                ROS_INFO("Drones Inside InSwarm case");
+                ROS_INFO("Drones InSwarm case");
                 nh.getParam("/vote_counter", vote_counter);
                 if(ThisDrone->in_swarm(id) && vote_counter < 3){   //added vote counter guard here 
                     
@@ -190,13 +188,15 @@ int main(int argc, char** argv)
                         nh.getParam("/vote_counter", vote_counter);
                         vote_counter += 1;
                         nh.setParam("/vote_counter", vote_counter); 
-                        ROS_INFO("Drones voted for members");
+                        ROS_INFO("Drones voted for members: %d", vote_counter);
                         //STATE = InSwarm;
                         member_election_sub.shutdown();
+                        break;
                     }
                     
                 }
 
+                //leader election loop
                 nh.getParam("/vote_counter", vote_counter);
                 if(ThisDrone->in_swarm(id) && vote_counter < 3){    //added vote counter guard here
                     leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
@@ -206,10 +206,12 @@ int main(int argc, char** argv)
                         ROS_INFO("Drones voted for leader");
                         //STATE = InSwarm;
                         leader_election_sub.shutdown();
+                        break;
                     }
                     
                 }
 
+                // transition to leader
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){    //inSwarm to leader transition
@@ -217,9 +219,11 @@ int main(int argc, char** argv)
                     ThisDrone->update_leader_position(id);
                     STATE = Leader;
                     ROS_INFO("leader assigned");
+                    break;
                 }
 
-                if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false){   // InSwarm to UpdatingLocation state
+                //transition to updating location
+                if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false){  
                     update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
                     if(update_location_var == 1){    
                         ROS_INFO("Drone moves 1 unit");
@@ -231,25 +235,29 @@ int main(int argc, char** argv)
                         set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                         STATE = UpdatingLocation;
                         update_location_sub.shutdown();
+                        break;
                     }   
                     
                 }
-                
-                if(ThisDrone->in_swarm(id) == false){    // InSwarm to Idle transition
+
+                // InSwarm to Idle transition
+                if(ThisDrone->in_swarm(id) == false){    
                     update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
                     if(update_status_var == 1){
                         land();
                         STATE = Idle;
                         update_status_sub.shutdown();
+                        break;
                     }
                     
                 }
-
+                // Inswarm to idle transition
                 mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
                 if(mission_end_var == 1){
                     land();
                     STATE = Idle;
                     mission_end_sub.shutdown();
+                    break;
                 }
                 
 
@@ -259,17 +267,22 @@ int main(int argc, char** argv)
 
             case Leader:
             {    
-                
+                // leader to in swarm state transition
                 if(ThisDrone->is_leader(id) == false){
                     STATE = InSwarm;
+                    break;
                 }
+
+                // leader to idle transition
                 mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
                 if(mission_end_var == 1){
                     land();
                     STATE = Idle;
                     mission_end_sub.shutdown();
+                    break;
                 }
                 
+                // leader to waitingswarm transition
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->swarm_reached_goal() == false && ThisDrone->is_leader(id) && updating_mission == true){
                     while(update_location_pub.getNumSubscribers() < 2){
@@ -285,6 +298,7 @@ int main(int argc, char** argv)
                         nh.getParam("/drone_location_y", drone_location_y);
                         set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                         STATE = WaitingSwarm;
+                        break;
                     //}
                     
                 }
@@ -294,11 +308,13 @@ int main(int argc, char** argv)
 
             case UpdatingLocation:
             {
+                //updating location to in swarm transition
                 ROS_INFO("Drone updating location");
                 location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
                 if(location_updated_var == 1){
                     STATE = InSwarm;
                     location_updated_sub.shutdown();
+                    break;
                 }
                 
                 break;  
