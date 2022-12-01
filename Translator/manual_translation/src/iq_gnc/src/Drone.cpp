@@ -179,7 +179,7 @@ int main(int argc, char** argv)
                 // member election logic
                 ROS_INFO("Drones InSwarm case");
                 nh.getParam("/vote_counter", vote_counter);
-                if(ThisDrone->in_swarm(id) && vote_counter < 3){   //added vote counter guard here 
+                if(ThisDrone->in_swarm(id)){   //added vote counter guard here 
                     
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
                     
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
                         vote_counter += 1;
                         nh.setParam("/vote_counter", vote_counter); 
                         ROS_INFO("Drones voted for members: %d", vote_counter);
-                        //STATE = InSwarm;
+                        STATE = InSwarm;
                         member_election_sub.shutdown();
                         break;
                     }
@@ -198,13 +198,12 @@ int main(int argc, char** argv)
 
                 //leader election loop
                 nh.getParam("/vote_counter", vote_counter);
-                if(ThisDrone->in_swarm(id) && vote_counter < 3){    //added vote counter guard here
+                if(ThisDrone->in_swarm(id)){    //added vote counter guard here
                     leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
                     if(leader_election_var == 1){    
-                        ROS_INFO("Right before leader election");
                         ThisDrone->vote(id);
                         ROS_INFO("Drones voted for leader");
-                        //STATE = InSwarm;
+                        STATE = InSwarm;
                         leader_election_sub.shutdown();
                         break;
                     }
@@ -290,6 +289,7 @@ int main(int argc, char** argv)
                     }
                     //else{
                         update_location_pub.publish(sync);
+                        ros::Duration(3).sleep(); 
                         ROS_INFO("Leader Drone Moves 1 unit");
                         ThisDrone->move(id);
                         vector<int> drone_location_x;
@@ -329,6 +329,7 @@ int main(int argc, char** argv)
                 //else{
                     
                     location_updated_pub.publish(sync);
+                    ros::Duration(3).sleep(); 
                     vote_counter = 0;
                     nh.setParam("/vote_counter", vote_counter);
                     STATE = InSwarm;

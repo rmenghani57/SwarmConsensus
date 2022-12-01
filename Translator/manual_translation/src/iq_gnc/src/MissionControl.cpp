@@ -97,6 +97,7 @@ int main(int argc, char** argv)
                     }
                     //else{
                         update_status_pub.publish(sync);
+                        ros::Duration(3).sleep(); 
                         MissionController->possible_member();
                         STATE = ElectMembers;
                         break;
@@ -108,16 +109,6 @@ int main(int argc, char** argv)
 
             case ElectMembers:
             {    
-                // electmembers to update members transition
-                ROS_INFO("Mission Control in ElectMembers state"); 
-                nh.getParam("/updating_mission", updating_mission);
-                if(updating_mission == false){
-                    MissionController->elect_members();
-                    ROS_INFO("Mission Control selected members");
-                    STATE = UpdateMembers;
-                    break;
-                }       
-
                 // elect members self loop
                 nh.getParam("/updating_mission", updating_mission);                
                 if(updating_mission == true){
@@ -128,12 +119,26 @@ int main(int argc, char** argv)
                     //else{
                         ROS_INFO("Setting updating mission false");
                         nh.setParam("/updating_mission", 0);
-                        ros::Duration(0.5).sleep();   // trying to sleep and see if the param changes
+                        
                         ROS_INFO("updating mission should be false %d", updating_mission);
                         member_election_pub.publish(sync);
+                        ros::Duration(3).sleep();  // sleep so drones can vote first, then MC selects members
                         break;
                     //}
                 }
+                
+                ROS_INFO("updating mission should be false %d", updating_mission);
+                // electmembers to update members transition
+                ROS_INFO("Mission Control in ElectMembers state"); 
+                nh.getParam("/updating_mission", updating_mission);
+                if(updating_mission == false){
+                    MissionController->elect_members();
+                    ROS_INFO("Mission Control selected members");
+                    STATE = UpdateMembers;
+                    break;
+                }       
+
+                
                 
                 break;
             }
@@ -141,12 +146,13 @@ int main(int argc, char** argv)
             case UpdateMembers: 
             {
                 // updatemembers to leader election transition
-                //ROS_INFO("waiting for upate status sub update members");  // GOT HERE
+                ROS_INFO("MC in UpdateMembers, publishing update status");  // GOT HERE
                 //while(update_status_pub.getNumSubscribers() < 1){
                      
                 //}
                 //else{
                     update_status_pub.publish(sync);
+                    ros::Duration(3).sleep(); 
                     updating_mission = 1;
                     nh.setParam("/updating_mission", updating_mission);
                     STATE = LeaderElection;
@@ -167,6 +173,7 @@ int main(int argc, char** argv)
                     }
                     //else{
                         election_pub.publish(sync);
+                        ros::Duration(3).sleep(); 
                         updating_mission = 1;
                         nh.setParam("/updating_mission", updating_mission);
                         break;
@@ -182,6 +189,7 @@ int main(int argc, char** argv)
                     //}
                     //else{
                         update_status_pub.publish(sync);
+                        ros::Duration(3).sleep(); // so drones vote first then MC elects
                         MissionController->elect_leader();
                         STATE = MissionStarted;
                         break;
@@ -203,6 +211,7 @@ int main(int argc, char** argv)
                     }
                     //else{
                         mission_end_pub.publish(sync);
+                        ros::Duration(3).sleep(); 
                         nh.setParam("/updating_mission", 0);   
                         STATE = MissionAccomplished;
                         break;
