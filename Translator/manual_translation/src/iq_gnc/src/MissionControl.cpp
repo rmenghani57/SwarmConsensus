@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     sync.data = 1;
 
 
-    ros::Duration(7).sleep();
+    ros::Duration(10).sleep();
 
     ROS_INFO("Mission Control going into while loop");
     
