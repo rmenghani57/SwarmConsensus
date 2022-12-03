@@ -166,9 +166,9 @@ int main(int argc, char** argv)
                         ROS_INFO("Inside Idle state, Drones should takeoff");
                         takeoff(10);
                         ROS_INFO("Waiting for drones to reach waypoint");
-                        while(check_waypoint_reached(0.5, 0.1) == 0){
+                        //while(check_waypoint_reached(0.5, 0.1) == 0){
                             
-                        }
+                        //}
                         STATE = InSwarm;
                         update_status_sub.shutdown();
                     }
@@ -237,9 +237,9 @@ int main(int argc, char** argv)
                         nh.getParam("/drone_location_y", drone_location_y);
                         set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                         ROS_INFO("Waiting for drones to reach waypoint");
-                        while(check_waypoint_reached(0.5, 0.1) == 0){
+                        //while(check_waypoint_reached(0.5, 0.1) == 0){
                             
-                        }
+                        //}
                         STATE = UpdatingLocation;
                         update_location_sub.shutdown();
                         rate.sleep();
@@ -312,9 +312,9 @@ int main(int argc, char** argv)
                     nh.getParam("/drone_location_y", drone_location_y);
                     set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                     ROS_INFO("Waiting for drones to reach waypoint");
-                    while(check_waypoint_reached(0.5, 0.1) == 0){
+                    //while(check_waypoint_reached(0.5, 0.1) == 0){
                         
-                    }
+                    //}
                     STATE = WaitingSwarm;
                     rate.sleep();
                     break;
