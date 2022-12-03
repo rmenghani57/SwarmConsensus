@@ -113,11 +113,9 @@ int main(int argc, char** argv)
                     
                     ROS_INFO("Setting updating mission false");
                     nh.setParam("/updating_mission", 0);
-                    ROS_INFO("updating mission should be false %d", updating_mission);
                     member_election_pub.publish(sync);
-                    rate.sleep();
-                    break;
-                 
+                    STATE = ElectMembers;
+                    rate.sleep();                 
                 }
                 
                 ROS_INFO("updating mission should be false %d", updating_mission);
@@ -153,24 +151,19 @@ int main(int argc, char** argv)
                 // leader election self loop
                 nh.getParam("/vote_counter", vote_counter);       
                 nh.getParam("/updating_mission", updating_mission);
-                if(vote_counter == 0 && updating_mission == 1){
-                    
+                if(vote_counter == 0 && updating_mission == 1){ 
                     while(election_pub.getNumSubscribers() < 3){
                         ROS_INFO("waiting for election subs leader election state");
                     }
-                   
                     election_pub.publish(sync); 
                     nh.setParam("/updating_mission", 1);
-                    rate.sleep();
-                    break;
-                
+                    rate.sleep();                
                 }
 
                 // leaderelection to missionstarted transition
                 nh.getParam("/Needed", Needed);
                 if(vote_counter == Needed){
                     ROS_INFO("waiting for update status subs leader election state");
-                    
                     update_status_pub.publish(sync);
                     ros::Duration(3).sleep(); // so drones vote first then MC elects
                     MissionController->elect_leader();
@@ -198,18 +191,17 @@ int main(int argc, char** argv)
                     STATE = MissionAccomplished;
                     rate.sleep();
                     break;
-                    
-                    
                 }            
                 
                 // missionstarted to checkmembers transition
-                location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
+                location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
                 if(location_updated_var == 1){                  
                     nh.setParam("/updating_mission", 1);
                     nh.setParam("/vote_counter", 0);
                     MissionController->reset_arrays();
                     STATE = CheckMembers;
                     location_updated_sub.shutdown();
+                    location_updated_var = 0;
                     rate.sleep();
                     break;
                 }
