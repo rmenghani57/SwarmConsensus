@@ -63,16 +63,12 @@ int main(int argc, char** argv)
     sync.data = 1;
 
     ROS_INFO("Mission Control going into while loop");
-    ros::Duration(3).sleep(); // sleep for 5 second
-
-    // rate of 1 Hz  
-    //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
-    ros::Rate rate(1.0);
-    // consider increasing freq
+    
+    ros::Rate rate(0.5);
+    
     while(ros::ok()){
 
         ros::spinOnce();
-                
 
         switch(STATE){
 
@@ -83,27 +79,25 @@ int main(int argc, char** argv)
                 nh.getParam("/goal", goal);
                 nh.setParam("/goal_location", goal); 
                 STATE = CheckMembers;
+                rate.sleep();
                 break;
             }    
+
             case CheckMembers:
             {    
                 // check members to elect members transition
                 ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
-                if(updating_mission == true){
+                if(updating_mission == 1){
                     
-                    while(update_status_pub.getNumSubscribers() < 3){                         
-                        //ROS_INFO("waiting for udpdate status sub");
-                    }
-                    //else{
-                        update_status_pub.publish(sync);
-                        ros::Duration(3).sleep(); 
-                        MissionController->possible_member();
-                        STATE = ElectMembers;
-                        break;
-                    //}
+                    update_status_pub.publish(sync); // update status can have 0 subs
+                    MissionController->possible_member();
+                    STATE = ElectMembers;
+                    rate.sleep();
+                    break;
+                  
                 }
-                //rate.sleep();
+
                 break;
             }
 
@@ -111,35 +105,34 @@ int main(int argc, char** argv)
             {    
                 // elect members self loop
                 nh.getParam("/updating_mission", updating_mission);                
-                if(updating_mission == true){
+                if(updating_mission == 1){
                     
                     while(member_election_pub.getNumSubscribers() < 3){
                         //ROS_INFO("waiting for updating mission sub elect members state");
                     }
-                    //else{
-                        ROS_INFO("Setting updating mission false");
-                        nh.setParam("/updating_mission", 0);
-                        
-                        ROS_INFO("updating mission should be false %d", updating_mission);
-                        member_election_pub.publish(sync);
-                        ros::Duration(3).sleep();  // sleep so drones can vote first, then MC selects members
-                        break;
-                    //}
+                    
+                    ROS_INFO("Setting updating mission false");
+                    nh.setParam("/updating_mission", 0);
+                    ROS_INFO("updating mission should be false %d", updating_mission);
+                    member_election_pub.publish(sync);
+                    rate.sleep();
+                    break;
+                 
                 }
                 
                 ROS_INFO("updating mission should be false %d", updating_mission);
                 // electmembers to update members transition
                 ROS_INFO("Mission Control in ElectMembers state"); 
                 nh.getParam("/updating_mission", updating_mission);
-                if(updating_mission == false){
+                if(updating_mission == 0){
                     MissionController->elect_members();
                     ROS_INFO("Mission Control selected members");
                     STATE = UpdateMembers;
+                    rate.sleep();
                     break;
                 }       
 
-                
-                
+                rate.sleep();
                 break;
             }
 
@@ -147,17 +140,11 @@ int main(int argc, char** argv)
             {
                 // updatemembers to leader election transition
                 ROS_INFO("MC in UpdateMembers, publishing update status");  // GOT HERE
-                //while(update_status_pub.getNumSubscribers() < 1){
-                     
-                //}
-                //else{
-                    update_status_pub.publish(sync);
-                    ros::Duration(3).sleep(); 
-                    updating_mission = 1;
-                    nh.setParam("/updating_mission", updating_mission);
-                    STATE = LeaderElection;
-                //}
-                    
+                
+                update_status_pub.publish(sync);   //update status can have 0 subs
+                nh.setParam("/updating_mission", 1);
+                STATE = LeaderElection;
+                rate.sleep();                    
                 break;     
             }
 
@@ -171,32 +158,28 @@ int main(int argc, char** argv)
                     while(election_pub.getNumSubscribers() < 3){
                         ROS_INFO("waiting for election subs leader election state");
                     }
-                    //else{
-                        election_pub.publish(sync);
-                        ros::Duration(3).sleep(); 
-                        updating_mission = 1;
-                        nh.setParam("/updating_mission", updating_mission);
-                        break;
-                    //}
+                   
+                    election_pub.publish(sync); 
+                    nh.setParam("/updating_mission", 1);
+                    rate.sleep();
+                    break;
+                
                 }
 
                 // leaderelection to missionstarted transition
                 nh.getParam("/Needed", Needed);
                 if(vote_counter == Needed){
                     ROS_INFO("waiting for update status subs leader election state");
-                    //while(update_status_pub.getNumSubscribers() < 3){
-                        
-                    //}
-                    //else{
-                        update_status_pub.publish(sync);
-                        ros::Duration(3).sleep(); // so drones vote first then MC elects
-                        MissionController->elect_leader();
-                        STATE = MissionStarted;
-                        break;
-                    //}
+                    
+                    update_status_pub.publish(sync);
+                    ros::Duration(3).sleep(); // so drones vote first then MC elects
+                    MissionController->elect_leader();
+                    STATE = MissionStarted;
+                    rate.sleep();
+                    break;
                     
                 }
-
+                rate.sleep();
                 break;
             }
 
@@ -209,27 +192,28 @@ int main(int argc, char** argv)
                     while(mission_end_pub.getNumSubscribers() < 3){
                         ROS_INFO("waiting for mission end subs mission started state");
                     }
-                    //else{
-                        mission_end_pub.publish(sync);
-                        ros::Duration(3).sleep(); 
-                        nh.setParam("/updating_mission", 0);   
-                        STATE = MissionAccomplished;
-                        break;
-                    //}
+                  
+                    mission_end_pub.publish(sync);
+                    nh.setParam("/updating_mission", 0);   
+                    STATE = MissionAccomplished;
+                    rate.sleep();
+                    break;
+                    
                     
                 }            
                 
                 // missionstarted to checkmembers transition
                 location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
                 if(location_updated_var == 1){                  
-                    nh.setParam("/updating_mission", true);
+                    nh.setParam("/updating_mission", 1);
                     nh.setParam("/vote_counter", 0);
                     MissionController->reset_arrays();
                     STATE = CheckMembers;
                     location_updated_sub.shutdown();
+                    rate.sleep();
                     break;
                 }
-                
+                rate.sleep();
                 break;
             }
 

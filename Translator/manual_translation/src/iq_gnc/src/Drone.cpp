@@ -135,7 +135,7 @@ int main(int argc, char** argv)
     // define TA states as enum
     enum STATES 
     {
-        Idle, InSwarm, Leader, UpdatingLocation, WaitingSwarm    //check if this is correct or need strings
+        Idle, InSwarm, Leader, UpdatingLocation, WaitingSwarm  
 
     } STATE;
 
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 
     // rate of 1 Hz
     //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
-    ros::Rate rate(1.0);
+    ros::Rate rate(0.5);
 
     while(ros::ok()){
 
@@ -165,24 +165,27 @@ int main(int argc, char** argv)
                     if(update_status_var == 1){
                         ROS_INFO("Inside Idle state, Drones should takeoff");
                         takeoff(10);
+                        while(check_waipoint_reached(0.5, 0.1) == 0){
+                            ROS_INFO("Waiting for drones to reach waypoint");
+                        }
                         STATE = InSwarm;
                         update_status_sub.shutdown();
                     }
                     
                 }
-                
+                rate.sleep();
                 break;
             }     
 
             case InSwarm:
             {
-                // member election logic
+                // member election logic 
                 ROS_INFO("Drones InSwarm case");
-                nh.getParam("/vote_counter", vote_counter);
                 if(ThisDrone->in_swarm(id)){   //added vote counter guard here 
                     
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
-                    
+                    leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
+
                     if(member_election_var == 1){    
                         ThisDrone->vote_member(id);
                         nh.getParam("/vote_counter", vote_counter);
@@ -191,25 +194,22 @@ int main(int argc, char** argv)
                         ROS_INFO("Drones voted for members: %d", vote_counter);
                         STATE = InSwarm;
                         member_election_sub.shutdown();
+                        rate.sleep();
                         break;
                     }
                     
-                }
-
-                //leader election loop
-                nh.getParam("/vote_counter", vote_counter);
-                if(ThisDrone->in_swarm(id)){    //added vote counter guard here
-                    leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
                     if(leader_election_var == 1){    
                         ThisDrone->vote(id);
                         ROS_INFO("Drones voted for leader");
                         STATE = InSwarm;
                         leader_election_sub.shutdown();
+                        rate.sleep();
                         break;
                     }
                     
                 }
 
+            
                 // transition to leader
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
@@ -218,12 +218,15 @@ int main(int argc, char** argv)
                     ThisDrone->update_leader_position(id);
                     STATE = Leader;
                     ROS_INFO("leader assigned");
+                    rate.sleep();
                     break;
                 }
 
                 //transition to updating location
                 if(ThisDrone->in_swarm(id) && ThisDrone->reached_goal(id) == false){  
+                    
                     update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
+                   
                     if(update_location_var == 1){    
                         ROS_INFO("Drone moves 1 unit");
                         ThisDrone->move(id);
@@ -232,8 +235,12 @@ int main(int argc, char** argv)
                         nh.getParam("/drone_location_x", drone_location_x);
                         nh.getParam("/drone_location_y", drone_location_y);
                         set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
+                        while(check_waipoint_reached(0.5, 0.1) == 0){
+                            ROS_INFO("Waiting for drones to reach waypoint");
+                        }
                         STATE = UpdatingLocation;
                         update_location_sub.shutdown();
+                        rate.sleep();
                         break;
                     }   
                     
@@ -246,21 +253,24 @@ int main(int argc, char** argv)
                         land();
                         STATE = Idle;
                         update_status_sub.shutdown();
+                        rate.sleep();
                         break;
                     }
                     
                 }
+
                 // Inswarm to idle transition
                 mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
                 if(mission_end_var == 1){
                     land();
                     STATE = Idle;
                     mission_end_sub.shutdown();
+                    rate.sleep();
                     break;
                 }
                 
-
                 ROS_INFO("breaking from inswarm case now");
+                rate.sleep();
                 break;
             }
 
@@ -269,6 +279,7 @@ int main(int argc, char** argv)
                 // leader to in swarm state transition
                 if(ThisDrone->is_leader(id) == false){
                     STATE = InSwarm;
+                    rate.sleep();
                     break;
                 }
 
@@ -278,6 +289,7 @@ int main(int argc, char** argv)
                     land();
                     STATE = Idle;
                     mission_end_sub.shutdown();
+                    rate.sleep();
                     break;
                 }
                 
@@ -287,22 +299,26 @@ int main(int argc, char** argv)
                     while(update_location_pub.getNumSubscribers() < 2){
                         ROS_INFO("waiting for mission control update location sub");
                     }
-                    //else{
-                        update_location_pub.publish(sync);
-                        ros::Duration(3).sleep(); 
-                        ROS_INFO("Leader Drone Moves 1 unit");
-                        ThisDrone->move(id);
-                        vector<int> drone_location_x;
-                        vector<int> drone_location_y;
-                        nh.getParam("/drone_location_x", drone_location_x);
-                        nh.getParam("/drone_location_y", drone_location_y);
-                        set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
-                        STATE = WaitingSwarm;
-                        break;
-                    //}
+                    
+                    update_location_pub.publish(sync);
+                    ros::Duration(3).sleep(); 
+                    ROS_INFO("Leader Drone Moves 1 unit");
+                    ThisDrone->move(id);
+                    vector<int> drone_location_x;
+                    vector<int> drone_location_y;
+                    nh.getParam("/drone_location_x", drone_location_x);
+                    nh.getParam("/drone_location_y", drone_location_y);
+                    set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
+                    while(check_waipoint_reached(0.5, 0.1) == 0){
+                        ROS_INFO("Waiting for drones to reach waypoint");
+                    }
+                    STATE = WaitingSwarm;
+                    rate.sleep();
+                    break;
+                    
                     
                 }
-                //rate.sleep();
+                rate.sleep();
                 break;
             }
 
@@ -314,9 +330,10 @@ int main(int argc, char** argv)
                 if(location_updated_var == 1){
                     STATE = InSwarm;
                     location_updated_sub.shutdown();
+                    rate.sleep();
                     break;
                 }
-                
+                rate.sleep();
                 break;  
             }
 
@@ -326,19 +343,17 @@ int main(int argc, char** argv)
                 while(location_updated_pub.getNumSubscribers() < 2){
                     ROS_INFO("waiting for mission control location updated sub");
                 }
-                //else{
                     
-                    location_updated_pub.publish(sync);
-                    ros::Duration(3).sleep(); 
-                    vote_counter = 0;
-                    nh.setParam("/vote_counter", vote_counter);
-                    STATE = InSwarm;
-
-                //}
-                //rate.sleep();
+                location_updated_pub.publish(sync);
+                ros::Duration(3).sleep(); 
+                vote_counter = 0;
+                nh.setParam("/vote_counter", vote_counter);
+                STATE = InSwarm;
+                rate.sleep();
                 break;
             }
         }
+        // does this make program sleep everytime it breaks?
         rate.sleep();
     }
     ROS_INFO("ROS IS NOT OKAY");
