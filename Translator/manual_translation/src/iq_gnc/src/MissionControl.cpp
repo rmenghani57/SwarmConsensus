@@ -31,7 +31,6 @@ int main(int argc, char** argv)
 
     std::string ThisNamespace;
     nh.getParam("namespace", ThisNamespace);
-    ROS_INFO("THIS NAMESPACE IS: %s", ThisNamespace.c_str());
 
     // all publishers - each represents a channel in uppaal
     // this node publishes to the update_status topic which is an Uppaal channel (triggered in MissionControl Template)
@@ -61,6 +60,9 @@ int main(int argc, char** argv)
     //define standard msg
     std_msgs::Int8 sync;
     sync.data = 1;
+
+
+    ros::Duration(7).sleep();
 
     ROS_INFO("Mission Control going into while loop");
     
@@ -156,6 +158,7 @@ int main(int argc, char** argv)
                         ROS_INFO("waiting for election subs leader election state");
                     }
                     election_pub.publish(sync); 
+                    ROS_INFO("Mission Control Sending Leader Election sync");
                     nh.setParam("/updating_mission", 1);
                     rate.sleep();                
                 }
@@ -163,10 +166,10 @@ int main(int argc, char** argv)
                 // leaderelection to missionstarted transition
                 nh.getParam("/Needed", Needed);
                 if(vote_counter == Needed){
-                    ROS_INFO("waiting for update status subs leader election state");
                     update_status_pub.publish(sync);
                     ros::Duration(3).sleep(); // so drones vote first then MC elects
                     MissionController->elect_leader();
+                    ROS_INFO("Mission Control Leader elected");
                     STATE = MissionStarted;
                     rate.sleep();
                     break;
@@ -179,6 +182,7 @@ int main(int argc, char** argv)
             case MissionStarted:
             {
                 // missionstarted to missionaccomplished transition
+                ROS_INFO("MC in mission started state");
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
                 if(MissionController->swarm_reached_goal()){

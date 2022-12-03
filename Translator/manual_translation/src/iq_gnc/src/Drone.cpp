@@ -141,6 +141,8 @@ int main(int argc, char** argv)
 
     STATE = Idle;
 
+    
+
     ROS_INFO("Drones going into while loop");
 
     // rate of 1 Hz
@@ -183,7 +185,7 @@ int main(int argc, char** argv)
                 if(ThisDrone->in_swarm(id)){   //added vote counter guard here 
                     
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
-                    leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
+                    
 
                     if(member_election_var == 1){    
                         ThisDrone->vote_member(id);
@@ -197,15 +199,14 @@ int main(int argc, char** argv)
                         //rate.sleep();
                         //break;
                     }
-                    
+
+                    leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
                     if(leader_election_var == 1){    
                         ThisDrone->vote(id);
                         ROS_INFO("Drones voted for leader");
                         STATE = InSwarm;
                         leader_election_sub.shutdown();
                         leader_election_var = 0;
-                        //rate.sleep();
-                        //break;
                     }
 
                     //transition to updating location
