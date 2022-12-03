@@ -120,13 +120,21 @@ int main(int argc, char** argv)
                     rate.sleep();                 
                 }
                 
+                //trying to stop more than 3 voting loops
+                nh.getParam("/vote_counter", vote_counter);
+                ROS_INFO("Number of votes in parameter server: %d", vote_counter);
+                while(vote_counter < 3){
+
+                }
+
                 ROS_INFO("updating mission should be false %d", updating_mission);
                 // electmembers to update members transition
                 ROS_INFO("Mission Control in ElectMembers state"); 
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == 0){
                     MissionController->elect_members();
-                    ROS_INFO("Mission Control selected members");
+                    nh.getParam("/vote_counter", vote_counter);
+                    ROS_INFO("After MC member election, vote counter should be 0: %d", vote_counter);
                     STATE = UpdateMembers;
                     rate.sleep();
                     break;
@@ -139,7 +147,7 @@ int main(int argc, char** argv)
             case UpdateMembers: 
             {
                 // updatemembers to leader election transition
-                ROS_INFO("MC in UpdateMembers, publishing update status");  // GOT HERE
+                ROS_INFO("MC in UpdateMembers, publishing update status. ");  // GOT HERE
                 
                 update_status_pub.publish(sync);   //update status can have 0 subs
                 nh.setParam("/updating_mission", 1);
@@ -163,11 +171,15 @@ int main(int argc, char** argv)
                     rate.sleep();                
                 }
 
+                nh.getParam("/vote_counter", vote_counter); 
+                while(vote_counter < 3){
+                    // wait till votes are 3
+                }
+
                 // leaderelection to missionstarted transition
                 nh.getParam("/Needed", Needed);
                 if(vote_counter == Needed){
                     update_status_pub.publish(sync);
-                    ros::Duration(3).sleep(); // so drones vote first then MC elects
                     MissionController->elect_leader();
                     ROS_INFO("Mission Control Leader elected");
                     STATE = MissionStarted;
