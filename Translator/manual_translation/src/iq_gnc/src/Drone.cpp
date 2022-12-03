@@ -353,7 +353,6 @@ int main(int argc, char** argv)
                 }
                     
                 location_updated_pub.publish(sync);
-                ros::Duration(3).sleep(); 
                 vote_counter = 0;
                 nh.setParam("/vote_counter", vote_counter);
                 STATE = InSwarm;
