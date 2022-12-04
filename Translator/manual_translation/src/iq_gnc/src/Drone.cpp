@@ -221,6 +221,7 @@ int main(int argc, char** argv)
                     }
                     if(leader_election_var == 1 && vote_counter < 3){       // addint vote counter constraint    
                         ThisDrone->vote(id);
+                        ros::Duration(0.5).sleep();
                         nh.getParam("/vote_counter", vote_counter);
                         ROS_INFO("Drones voted for leader: %d", vote_counter);
                         STATE = InSwarm;
