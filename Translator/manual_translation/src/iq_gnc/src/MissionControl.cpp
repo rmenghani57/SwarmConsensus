@@ -212,7 +212,10 @@ int main(int argc, char** argv)
                 
                 // missionstarted to checkmembers transition
                 location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
-                if(location_updated_var == 1){                  
+                while(location_updated_var != 1){
+                    ros::spinOnce();
+                }
+                if(location_updated_var == 1){           
                     nh.setParam("/updating_mission", 1);
                     nh.setParam("/vote_counter", 0);
                     MissionController->reset_arrays();

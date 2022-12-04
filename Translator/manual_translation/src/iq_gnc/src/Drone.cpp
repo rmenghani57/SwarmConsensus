@@ -164,6 +164,9 @@ int main(int argc, char** argv)
                 if(ThisDrone->in_swarm(id)){
                     
                     update_status_sub = nh.subscribe("/update_status", 1, statusCallback);
+                    while(update_status_var != 1){
+                        ros::spinOnce();
+                    }
                                         
                     if(update_status_var == 1){
                         ROS_INFO("Inside Idle state, Drones should takeoff");
@@ -246,7 +249,9 @@ int main(int argc, char** argv)
                 if(flag == 1 && ThisDrone->in_swarm(id) == true && ThisDrone->reached_goal(id) == false){  
                 
                     update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
-
+                    while(update_location_var != 1){
+                        ros::spinOnce();
+                    }
                     if(update_location_var == 1){    
                         ROS_INFO("Drone moves 1 unit");
                         ThisDrone->move(id);
@@ -346,6 +351,9 @@ int main(int argc, char** argv)
                 //updating location to in swarm transition
                 ROS_INFO("Drone updating location");
                 location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
+                while(location_updated_var != 1){
+                    ros::spinOnce();
+                }
                 if(location_updated_var == 1){
                     STATE = InSwarm;
                     location_updated_sub.shutdown();
