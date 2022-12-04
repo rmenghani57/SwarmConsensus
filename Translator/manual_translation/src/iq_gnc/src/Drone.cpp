@@ -197,10 +197,10 @@ int main(int argc, char** argv)
                     nh.getParam("/vote_counter", vote_counter);
                     if(member_election_var == 1 && vote_counter < 3){  // try vote counter restriction here   
                         ThisDrone->vote_member(id);
-                        ros::Duration(0.5).sleep();
-                        nh.getParam("/vote_counter", vote_counter);
                         vote_counter += 1;
                         nh.setParam("/vote_counter", vote_counter); 
+                        ros::Duration(3).sleep();
+                        nh.getParam("/vote_counter", vote_counter);
                         ROS_INFO("Drones voted for members: %d", vote_counter);
                         STATE = InSwarm;
                         member_election_sub.shutdown();
@@ -222,7 +222,7 @@ int main(int argc, char** argv)
                     }
                     if(leader_election_var == 1 && vote_counter < 3){       // addint vote counter constraint    
                         ThisDrone->vote(id);
-                        ros::Duration(0.5).sleep();
+                        ros::Duration(3).sleep();
                         nh.getParam("/vote_counter", vote_counter);
                         ROS_INFO("Drones voted for leader: %d", vote_counter);
                         STATE = InSwarm;
@@ -247,7 +247,7 @@ int main(int argc, char** argv)
                 }
 
 
-                //transition to updating location  added a flag to know when drones voted
+                //transition to updating location 
                 if(flag == 1 && ThisDrone->in_swarm(id) == true && ThisDrone->reached_goal(id) == false){  
                 
                     update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
@@ -263,7 +263,6 @@ int main(int argc, char** argv)
                         nh.getParam("/drone_location_y", drone_location_y);
                         set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
                         ROS_INFO("Waiting for drones to reach waypoint");
-                        
                         STATE = UpdatingLocation;
                         update_location_sub.shutdown();
                         update_location_var = 0;
@@ -328,7 +327,6 @@ int main(int argc, char** argv)
                     while(update_location_pub.getNumSubscribers() < 2){
                         ROS_INFO("waiting for mission control update location sub");
                     }
-                    
                     update_location_pub.publish(sync); 
                     ROS_INFO("Leader Drone Moves 1 unit");
                     ThisDrone->move(id);
@@ -340,9 +338,7 @@ int main(int argc, char** argv)
                     ROS_INFO("Waiting for drones to reach waypoint");
                     STATE = WaitingSwarm;
                     rate.sleep();
-                    break;
-                    
-                    
+                    break;  
                 }
                 rate.sleep();
                 break;
