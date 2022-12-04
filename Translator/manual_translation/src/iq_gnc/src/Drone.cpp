@@ -141,7 +141,8 @@ int main(int argc, char** argv)
 
     STATE = Idle;
 
-    
+    // create a flag to know when the drones voted when InSwarm state
+    int flag = 0;
 
     ROS_INFO("Drones going into while loop");
 
@@ -180,6 +181,7 @@ int main(int argc, char** argv)
 
             case InSwarm:
             {
+                
                 // member election logic 
                 ROS_INFO("Drones InSwarm case");
                 if(ThisDrone->in_swarm(id)){   //added vote counter guard here 
@@ -197,14 +199,10 @@ int main(int argc, char** argv)
                         STATE = InSwarm;
                         member_election_sub.shutdown();
                         member_election_var = 0;
-                        //rate.sleep();
-                        //break;
-                    }
-
-                    nh.getParam("/vote_counter", vote_counter);
-                    while(vote_counter =! 0){
+                        nh.getParam("/vote_counter", vote_counter);
+                        while(vote_counter =! 0){
                         // wait till member election sets votes back to 0
-
+                        }
                     }
 
                     nh.getParam("/vote_counter", vote_counter);
@@ -215,14 +213,15 @@ int main(int argc, char** argv)
                         STATE = InSwarm;
                         leader_election_sub.shutdown();
                         leader_election_var = 0;
+                        flag = 1;
                         break;    // bc leader drone at this point needs to go to leader state
 
                     }
 
                     
 
-                    //transition to updating location
-                    if(ThisDrone->reached_goal(id) == false){  
+                    //transition to updating location  added a flag to know when drones voted
+                    if(falag = 1 && ThisDrone->reached_goal(id) == false){  
                     
                         update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
 
