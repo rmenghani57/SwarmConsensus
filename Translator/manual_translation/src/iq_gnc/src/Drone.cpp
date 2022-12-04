@@ -184,7 +184,7 @@ int main(int argc, char** argv)
                 
                 // member election logic 
                 ROS_INFO("Drones InSwarm case");
-                if(ThisDrone->in_swarm(id)){   //added vote counter guard here 
+                if(flag = 0 && ThisDrone->in_swarm(id)){   //added vote counter guard here 
                     
                     ROS_INFO("Drones in election loops");
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
@@ -200,19 +200,21 @@ int main(int argc, char** argv)
                         member_election_sub.shutdown();
                         member_election_var = 0;
                         nh.getParam("/vote_counter", vote_counter);
-                        while(vote_counter != 0){
-                        // wait till member election sets votes back to 0
-                            nh.getParam("/vote_counter", vote_counter);
-                        }
+
                     }
 
+                    while(vote_counter != 0){
+                    // wait till member election sets votes back to 0
+                        nh.getParam("/vote_counter", vote_counter);
+                    }
 
                     ROS_INFO("drones out of member election, moving to leader election");
                     nh.getParam("/vote_counter", vote_counter);
                     leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
                     if(leader_election_var == 1 && vote_counter < 3){       // addint vote counter constraint    
                         ThisDrone->vote(id);
-                        ROS_INFO("Drones voted for leader");
+                        nh.getParam("/vote_counter", vote_counter);
+                        ROS_INFO("Drones voted for leader: %d", vote_counter);
                         STATE = InSwarm;
                         leader_election_sub.shutdown();
                         leader_election_var = 0;
@@ -242,6 +244,7 @@ int main(int argc, char** argv)
                             update_location_sub.shutdown();
                             update_location_var = 0;
                             rate.sleep();
+                            flag = 0;
                             break;
                         }   
                     
