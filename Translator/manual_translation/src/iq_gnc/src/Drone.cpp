@@ -184,6 +184,7 @@ int main(int argc, char** argv)
                 ROS_INFO("Drones InSwarm case");
                 if(ThisDrone->in_swarm(id)){   //added vote counter guard here 
                     
+                    ROS_INFO("Drones in election loops");
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
                     
                     nh.getParam("/vote_counter", vote_counter);
@@ -200,8 +201,10 @@ int main(int argc, char** argv)
                         //break;
                     }
 
+                    nh.getParam("/vote_counter", vote_counter);
                     while(vote_counter =! 0){
                         // wait till member election sets votes back to 0
+
                     }
 
                     nh.getParam("/vote_counter", vote_counter);
@@ -212,9 +215,10 @@ int main(int argc, char** argv)
                         STATE = InSwarm;
                         leader_election_sub.shutdown();
                         leader_election_var = 0;
+                        break;    // bc leader drone at this point needs to go to leader state
+
                     }
 
-                    break;    // bc leader drone at this point needs to go to leader state
                     
 
                     //transition to updating location
