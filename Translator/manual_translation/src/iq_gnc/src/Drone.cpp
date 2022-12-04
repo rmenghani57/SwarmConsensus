@@ -223,45 +223,42 @@ int main(int argc, char** argv)
 
                     }
 
-                    
-
-                    //transition to updating location  added a flag to know when drones voted
-                    if(flag = 1 && ThisDrone->reached_goal(id) == false){  
-                    
-                        update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
-
-                        if(update_location_var == 1){    
-                            ROS_INFO("Drone moves 1 unit");
-                            ThisDrone->move(id);
-                            vector<int> drone_location_x;
-                            vector<int> drone_location_y;
-                            nh.getParam("/drone_location_x", drone_location_x);
-                            nh.getParam("/drone_location_y", drone_location_y);
-                            set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
-                            ROS_INFO("Waiting for drones to reach waypoint");
-                            
-                            STATE = UpdatingLocation;
-                            update_location_sub.shutdown();
-                            update_location_var = 0;
-                            rate.sleep();
-                            flag = 0;
-                            break;
-                        }   
-                    
-                    }
-
                 }
 
                 // transition to leader
                 nh.getParam("/vote_counter", vote_counter);
                 nh.getParam("/updating_mission", updating_mission);
                 if(ThisDrone->is_leader(id) && vote_counter == Needed && updating_mission == 1){    //inSwarm to leader transition
-                    ROS_INFO("before leader assigned");
                     ThisDrone->update_leader_position(id);
                     STATE = Leader;
-                    ROS_INFO("leader assigned");
+                    ROS_INFO("leader transitions");
                     rate.sleep();
                     break;
+                }
+
+
+                //transition to updating location  added a flag to know when drones voted
+                if(flag = 1 && ThisDrone->in_swarm(id) == true && ThisDrone->reached_goal(id) == false){  
+                
+                    update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
+
+                    if(update_location_var == 1){    
+                        ROS_INFO("Drone moves 1 unit");
+                        ThisDrone->move(id);
+                        vector<int> drone_location_x;
+                        vector<int> drone_location_y;
+                        nh.getParam("/drone_location_x", drone_location_x);
+                        nh.getParam("/drone_location_y", drone_location_y);
+                        set_destination(drone_location_x[id], drone_location_y[id], 10, 10);
+                        ROS_INFO("Waiting for drones to reach waypoint");
+                        
+                        STATE = UpdatingLocation;
+                        update_location_sub.shutdown();
+                        update_location_var = 0;
+                        rate.sleep();
+                        flag = 0;
+                        break;
+                    }   
                 }
 
                 // InSwarm to Idle transition
@@ -365,6 +362,8 @@ int main(int argc, char** argv)
                 vote_counter = 0;
                 nh.setParam("/vote_counter", vote_counter);
                 STATE = InSwarm;
+                // return flag to 0 for leader so it goes into election loop as well. 
+                flag  = 0;
                 rate.sleep();
                 break;
             }
