@@ -221,7 +221,7 @@ int main(int argc, char** argv)
                     
 
                     //transition to updating location  added a flag to know when drones voted
-                    if(falag = 1 && ThisDrone->reached_goal(id) == false){  
+                    if(flag = 1 && ThisDrone->reached_goal(id) == false){  
                     
                         update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
 
