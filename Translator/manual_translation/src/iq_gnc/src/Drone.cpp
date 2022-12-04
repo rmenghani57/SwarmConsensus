@@ -197,6 +197,7 @@ int main(int argc, char** argv)
                     nh.getParam("/vote_counter", vote_counter);
                     if(member_election_var == 1 && vote_counter < 3){  // try vote counter restriction here   
                         ThisDrone->vote_member(id);
+                        ros::Duration(0.5).sleep();
                         nh.getParam("/vote_counter", vote_counter);
                         vote_counter += 1;
                         nh.setParam("/vote_counter", vote_counter); 
