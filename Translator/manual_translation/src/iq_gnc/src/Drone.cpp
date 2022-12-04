@@ -189,7 +189,7 @@ int main(int argc, char** argv)
                     ROS_INFO("Drones in election loops");
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
                     while(member_election_var != 1){
-                        
+                        ros::spinOnce();
                     }
                     nh.getParam("/vote_counter", vote_counter);
                     if(member_election_var == 1 && vote_counter < 3){  // try vote counter restriction here   
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
                     nh.getParam("/vote_counter", vote_counter);
                     leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
                     while(leader_election_var != 1){
-
+                        ros::spinOnce();
                     }
                     if(leader_election_var == 1 && vote_counter < 3){       // addint vote counter constraint    
                         ThisDrone->vote(id);
