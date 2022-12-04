@@ -202,6 +202,7 @@ int main(int argc, char** argv)
                         nh.getParam("/vote_counter", vote_counter);
                         while(vote_counter =! 0){
                         // wait till member election sets votes back to 0
+                            nh.getParam("/vote_counter", vote_counter);
                         }
                     }
 

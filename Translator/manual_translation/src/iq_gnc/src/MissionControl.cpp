@@ -124,7 +124,7 @@ int main(int argc, char** argv)
                 nh.getParam("/vote_counter", vote_counter);
                 ROS_INFO("Number of votes in parameter server: %d", vote_counter);
                 while(vote_counter < 3){
-
+                    nh.getParam("/vote_counter", vote_counter);
                 }
 
                 ROS_INFO("updating mission should be false %d", updating_mission);
@@ -174,6 +174,7 @@ int main(int argc, char** argv)
                 nh.getParam("/vote_counter", vote_counter); 
                 while(vote_counter < 3){
                     // wait till votes are 3
+                    nh.getParam("/vote_counter", vote_counter);
                 }
 
                 // leaderelection to missionstarted transition
