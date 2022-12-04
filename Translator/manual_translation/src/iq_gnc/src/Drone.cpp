@@ -184,7 +184,7 @@ int main(int argc, char** argv)
                 
                 // member election logic 
                 ROS_INFO("Drones InSwarm case");
-                if(flag = 0 && ThisDrone->in_swarm(id)){   //added vote counter guard here 
+                if(flag == 0 && ThisDrone->in_swarm(id)){   //added vote counter guard here 
                     
                     ROS_INFO("Drones in election loops");
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
@@ -238,7 +238,7 @@ int main(int argc, char** argv)
 
 
                 //transition to updating location  added a flag to know when drones voted
-                if(flag = 1 && ThisDrone->in_swarm(id) == true && ThisDrone->reached_goal(id) == false){  
+                if(flag == 1 && ThisDrone->in_swarm(id) == true && ThisDrone->reached_goal(id) == false){  
                 
                     update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
 
