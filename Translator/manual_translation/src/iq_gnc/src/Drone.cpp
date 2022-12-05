@@ -17,37 +17,27 @@ int mission_end_var;
 int location_updated_var;
 
 void locationUpdatedCallback(std_msgs::Int8 location_updated){
-
-    //ROS_INFO("location_updated = [%d]", location_updated.data);
     location_updated_var = location_updated.data;
-
 }
 
 
 void statusCallback(std_msgs::Int8 update_status){
-
-    //ROS_INFO("update_stautus = [%d]", update_status.data);
     update_status_var = update_status.data;
-
 }
 
 void memberElectionCallback(std_msgs::Int8 member_election){
-    //ROS_INFO("member_election = [%d]", member_election.data);
     member_election_var = member_election.data;
 }
 
 void leaderElectionCallback(std_msgs::Int8 leader_election){
-    //ROS_INFO("leader_election = [%d]", leader_election.data);
     leader_election_var = leader_election.data;
 }
 
 void updateLocationCallback(std_msgs::Int8 update_location){
-    //ROS_INFO("update_location = [%d]", update_location.data);
     update_location_var = update_location.data;
 }
 
 void missionEndCallback(std_msgs::Int8 mission_end){
-    //ROS_INFO("update_location = [%d]", mission_end.data);
     mission_end_var = mission_end.data;
 }
 
@@ -69,8 +59,9 @@ int main(int argc, char** argv)
     Drone* ThisDrone = new Drone(id);
     
 
-    // This function is called at the beginning of a program and will start of the communication links to the FCU. The function requires the program's ros nodehandle as an input 
-    // This function takes our ros node handle as an input and initializes subcribers that will collect the necessary information from our autopilot. 
+    
+    // This function takes our ros node handle as an input and initializes subcribers 
+    // that will collect the necessary information from our autopilot. 
     // @returns n/a
     init_publisher_subscriber(nh);
 
@@ -80,11 +71,6 @@ int main(int argc, char** argv)
     // changing mode to GUIDED 
     set_mode("GUIDED");
 
-    //if(current_state_g.mode == "GUIDED")
-	//{
-	//	ROS_INFO("Mode set to GUIDED. Mission starting");
-    //}
-
 	//create local reference frame 
 	initialize_local_frame();
     
@@ -92,34 +78,17 @@ int main(int argc, char** argv)
     nh.getParam("namespace", ThisNamespace);
     ROS_INFO("THIS NAMESPACE IS: %s", ThisNamespace.c_str());
 
+    // define subscribers
     ros::Subscriber update_status_sub;
-    
-    //whenever new message in topic member_election, statusCallback func is called
-    //ros::Subscriber member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
     ros::Subscriber member_election_sub;
-
-    //ros::Subscriber leader_election_sub = nh.subscribe("/leader_election", 1, leaderElectionCallback);
     ros::Subscriber leader_election_sub;
-
-    // both pub and sub for this topic in same node, could cause problems
-    //ros::Subscriber update_location_sub = nh.subscribe("/update_location", 1, updateLocationCallback);
     ros::Subscriber update_location_sub;
-
-    // same as mission control template, might cause problems
-    //ros::Subscriber location_updated_sub = nh.subscribe("/location_updated", 1, locationUpdatedCallback);
     ros::Subscriber location_updated_sub;
-
-    //mission end subscirber
-    //ros::Subscriber mission_end_sub = nh.subscribe("/mission_end", 1, missionEndCallback);
     ros::Subscriber mission_end_sub;
 
     //Publishers
-    //ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/location_updated").c_str(), 1);  
     ros::Publisher location_updated_pub = nh.advertise<std_msgs::Int8>("/location_updated", 1, true);  // checking without namespace and adding latch
-    // publisher and subscriber in same node (here)
-    //ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/update_location").c_str(), 1);
     ros::Publisher update_location_pub = nh.advertise<std_msgs::Int8>("/update_location", 1, true);
-
     
     // local global variable to get and set vote counter variable
     int vote_counter;
@@ -146,15 +115,12 @@ int main(int argc, char** argv)
 
     ROS_INFO("Drones going into while loop");
 
-    // rate of 1 Hz
-    //frequency that you would like to loop at. It will keep track of how long it has been since the last call to Rate::sleep(), and sleep for the correct amount of time.
     ros::Rate rate(0.5);
 
     while(ros::ok()){
 
         ros::spinOnce();
         
-
         switch(STATE){
 
             case Idle:
@@ -184,10 +150,9 @@ int main(int argc, char** argv)
 
             case InSwarm:
             {
-                
                 // member election logic 
                 ROS_INFO("Drones InSwarm case");
-                if(flag == 0 && ThisDrone->in_swarm(id)){   //added vote counter guard here 
+                if(flag == 0 && ThisDrone->in_swarm(id)){  
                     
                     ROS_INFO("Drones in election loops");
                     member_election_sub = nh.subscribe("/member_election", 1, memberElectionCallback);
@@ -195,7 +160,7 @@ int main(int argc, char** argv)
                         break;
                     }
                     nh.getParam("/vote_counter", vote_counter);
-                    if(member_election_var == 1 && vote_counter < 3){  // try vote counter restriction here   
+                    if(member_election_var == 1 && vote_counter < 3){  // vote counter restriction added here   
                         ThisDrone->vote_member(id);
                         vote_counter += 1;
                         nh.setParam("/vote_counter", vote_counter); 
@@ -219,7 +184,7 @@ int main(int argc, char** argv)
                     while(leader_election_var != 1){
                         break;
                     }
-                    if(leader_election_var == 1 && vote_counter < 3){       // addint vote counter constraint    
+                    if(leader_election_var == 1 && vote_counter < 3){       
                         ThisDrone->vote(id);
                         ros::Duration(3).sleep();
                         nh.getParam("/vote_counter", vote_counter);
@@ -244,7 +209,6 @@ int main(int argc, char** argv)
                     rate.sleep();
                     break;
                 }
-
 
                 //transition to updating location 
                 if(flag == 1 && ThisDrone->in_swarm(id) == true && ThisDrone->reached_goal(id) == false){  
@@ -378,7 +342,7 @@ int main(int argc, char** argv)
                 break;
             }
         }
-        // does this make program sleep everytime it breaks?
+       
         rate.sleep();
     }
     ROS_INFO("ROS IS NOT OKAY");

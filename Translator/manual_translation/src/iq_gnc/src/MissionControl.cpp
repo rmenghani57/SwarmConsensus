@@ -9,12 +9,8 @@ using namespace std;
 int location_updated_var;
 
 void locationUpdatedCallback(std_msgs::Int8 location_updated){
-
-    //ROS_INFO("location_updated = [%d]", location_updated.data);
     location_updated_var = location_updated.data;
-
 }
-
 
 int main(int argc, char** argv)
 {
@@ -33,14 +29,12 @@ int main(int argc, char** argv)
     nh.getParam("namespace", ThisNamespace);
 
     // all publishers - each represents a channel in uppaal
-    // this node publishes to the update_status topic which is an Uppaal channel (triggered in MissionControl Template)
     ros::Publisher update_status_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/update_status").c_str(), 1, true);
     ros::Publisher member_election_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/member_election").c_str(), 1, true);
     ros::Publisher election_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/leader_election").c_str(), 1, true);
     ros::Publisher mission_end_pub = nh.advertise<std_msgs::Int8>((ThisNamespace+"/mission_end").c_str(), 1, true);
 
     //subscribers
-    //ros::Subscriber location_updated_sub = nh.subscribe((ThisNamespace+"/location_updated").c_str(), 1, locationUpdatedCallback);
     ros::Subscriber location_updated_sub;
 
     // define TA states as enum
@@ -51,7 +45,6 @@ int main(int argc, char** argv)
 
     STATE = Start;
 
-    //fixing re declaration errors
     int updating_mission; 
     int vote_counter;       
     int Needed;
@@ -91,13 +84,11 @@ int main(int argc, char** argv)
                 ROS_INFO("Mission Control in Check Members state");     
                 nh.getParam("/updating_mission", updating_mission);
                 if(updating_mission == 1){
-                    
                     update_status_pub.publish(sync); // update status can have 0 subs
                     MissionController->possible_member();
                     STATE = ElectMembers;
                     rate.sleep();
                     break;
-                  
                 }
 
                 break;
@@ -110,9 +101,8 @@ int main(int argc, char** argv)
                 if(updating_mission == 1){
                     
                     while(member_election_pub.getNumSubscribers() < 3){
-                        //ROS_INFO("waiting for updating mission sub elect members state");
+                        //waiting for sync
                     }
-                    
                     ROS_INFO("Setting updating mission false");
                     nh.setParam("/updating_mission", 0);
                     member_election_pub.publish(sync);
@@ -120,14 +110,12 @@ int main(int argc, char** argv)
                     rate.sleep();                 
                 }
                 
-                //trying to stop more than 3 voting loops
                 nh.getParam("/vote_counter", vote_counter);
                 ROS_INFO("Number of votes in parameter server: %d", vote_counter);
                 while(vote_counter < 3){
                     nh.getParam("/vote_counter", vote_counter);
                 }
 
-                ROS_INFO("updating mission should be false %d", updating_mission);
                 // electmembers to update members transition
                 ROS_INFO("Mission Control in ElectMembers state"); 
                 nh.getParam("/updating_mission", updating_mission);
@@ -139,7 +127,6 @@ int main(int argc, char** argv)
                     rate.sleep();
                     break;
                 }       
-
                 rate.sleep();
                 break;
             }
@@ -147,8 +134,7 @@ int main(int argc, char** argv)
             case UpdateMembers: 
             {
                 // updatemembers to leader election transition
-                ROS_INFO("MC in UpdateMembers, publishing update status. ");  // GOT HERE
-                
+                ROS_INFO("MC in UpdateMembers, publishing update status. "); 
                 update_status_pub.publish(sync);   //update status can have 0 subs
                 nh.setParam("/updating_mission", 1);
                 STATE = LeaderElection;
@@ -186,7 +172,6 @@ int main(int argc, char** argv)
                     STATE = MissionStarted;
                     rate.sleep();
                     break;
-                    
                 }
                 rate.sleep();
                 break;
@@ -234,11 +219,7 @@ int main(int argc, char** argv)
                 break;
 
         }
-
         rate.sleep();
-
     }
-
     ROS_INFO("ROS IS NOT OK");
-
 }
